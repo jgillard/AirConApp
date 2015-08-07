@@ -1,0 +1,84 @@
+<ion-view view-title="Home | {{ username }}" >
+  <ion-content scroll="false">
+
+    <!-- DEBUG TOP ROW -->
+
+    <div class="row">
+      <div class="col">
+        <button class="button button-block" ng-click="locate()"
+                ng-class="{'button-assertive': !gotLoc, 'button-balanced': gotLoc}">
+          Geolocation
+        </button>
+      </div>
+      <div class="col">
+        <button class="button button-block button-positive" ng-click="pushNow()">
+          Test Push Now
+        </button>
+      </div>
+    </div>
+
+    <!-- SINGLE AND MULTPLE PUSH SCHEDULE ROW -->
+
+    <div class="row">
+      <div class="col card">
+        <form ng-submit="pushSchedule(form.minutes)" class="login-form">
+          <div class="card">
+            <div class="list">
+              <label class="item item-input">
+                <input type="number" ng-model="form.minutes" placeholder="When?">
+              </label>
+            </div>
+          </div>
+          <p style="text-align: center"> Currently in seconds </p>      
+          <div class="padding-left padding-right">
+            <button class="button button-block action-button" type="submit">
+              Schedule Local Push
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="col card">
+        <form ng-submit="pushMultiple(form.interval, form.end)" class="login-form">
+          <div class="card">
+            <div class="list">
+              <label class="item item-input">
+                <input type="number" ng-model="form.interval" placeholder="Interval?">
+              </label>
+            </div>
+          </div>  
+          <div class="card">
+            <div class="list">
+              <label class="item item-input">
+                <input type="time" ng-model="form.end" placeholder="End?">
+              </label>
+            </div>
+          </div>      
+          <div class="padding-left padding-right">
+            <button class="button button-block action-button" type="submit">
+              Multiple
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- IS SCHEDULED & STFU ROW -->
+    
+    <div class="row">
+      <div class="col">
+        <div class="">
+          <button class="button button-block button-positive" ng-click="isScheduled()">
+            Is Scheduled?
+          </button>
+        </div>
+      </div>
+      <div class="col">
+        <button class="button button-block button-assertive" ng-click="cancelAll()">
+          OMG STFU!
+        </button>
+      </div>
+    </div>
+
+  </ion-content>
+</ion-view>

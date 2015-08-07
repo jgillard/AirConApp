@@ -1,0 +1,10 @@
+hooks/
+platforms/
+plugins/
+resources/
+www/lib/
+
+*.sublime-workspace
+*.sublime-project
+
+.io-config.json
