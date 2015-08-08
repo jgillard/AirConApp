@@ -101,10 +101,29 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
         var currentUser = Parse.User.current();
         if (currentUser) Parse.destroySession;
 
-        User.auth(username, password, email, signingUp).then(function() {
+        window.plugins.phonenumber.get(function(phoneNum) {
+            console.log('phoneNum: ' + phoneNum);
+            $scope.callAuth(username, password, email, phoneNum, signingUp);
+        }, function(error) {
+            console.log(error);
+            if (signingUp) {
+                $cordovaDialogs.prompt('Please enter this phone\'s number', error, ['Submit'])
+                .then(function(result) {
+                    $scope.callAuth(username, password, email, result.input1, signingUp);
+                });
+            } else {
+                $scope.callAuth(username, password, email, undefined, signingUp);
+            }
+            
+        });
+    };
+
+    $scope.callAuth = function(username, password, email, phoneNum, signingUp) {
+        User.auth(username, password, email, phoneNum, signingUp).then(function() {
             $state.go('tab.home');
         }, function(error) {
             $cordovaDialogs.alert(error.message, 'Error: ' + error.code, 'Try again!');
+            console.log('User.auth ' + error.message + ' Error: ' + error.code);
         })
     };
 

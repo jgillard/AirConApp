@@ -151,13 +151,14 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
         username: false,
     };
 
-    o.auth = function(email, username, password, signingUp) {
-        console.log('Attempting login: ' + username, password, email, signingUp)
+    o.auth = function(username, password, email, number, signingUp) {
+        console.log('Attempting login: ' + username, password, email, number, signingUp)
         var user = new Parse.User();
         user.set("username", username);
         user.set("password", password);
         if (signingUp) {
             user.set("email", email);
+            user.set("phonenumber", phonenumber);
             return user.signUp(null, {
                 success: function(user) {
                     o.setSession(username);
