@@ -13,7 +13,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
             StatusBar.styleLightContent();
         }
         
-        Parse.initialize("2eTvng6jat98PK8s2FvtCzTemNW8KMcIAucftHMH", "B9jwJhLtqcsdVRTqW1MVMbBsIRO0fu9XIfI6Bd5g");
+        Parse.initialize(config.PARSE_APPLICATION_ID, config.PARSE_JAVASCRIPT_KEY);
         Parse.User.enableRevocableSession();
         // $ionicAnalytics.register();
         Connection.checkConnection();

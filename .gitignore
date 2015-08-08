@@ -8,3 +8,4 @@ www/lib/
 *.sublime-project
 
 .io-config.json
+config.js
