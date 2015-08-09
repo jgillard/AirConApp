@@ -30,42 +30,66 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
     $rootScope.$on('$cordovaLocalNotification:schedule', function (event, notification, state) {
         console.log('SCHEDULED', event, notification, state);
         var scheduledTime = new Date(notification.at * 1000);
+        var deltat = Math.round((scheduledTime - Date.now()) / 1000);
         ParseService.getCurrentPosition().then(function(coords) {
             console.log('updated location from SCHEDULED');
             ParseService.savePush('pushScheduled', scheduledTime);
-        });        
+        });  
+        $cordovaLocalNotification.getAllScheduled(function (response) {
+            if (deltat > 0 && response.length == 1) {
+                $cordovaDialogs.alert('Next push in ' + deltat + ' seconds', 'Success');      
+            }
+        });
     });
 
     $rootScope.$on('$cordovaLocalNotification:trigger', function (event, notification, state) {
         console.log('TRIGGERED', event, notification, state);
-        $cordovaDialogs.confirm('Acknowledge me :)', 'Push', ['buttonz', 'everywherz']);
-        var triggeredTime = new Date();
+        var triggeredTime = new Date();      
         ParseService.getCurrentPosition().then(function(coords) {
             console.log('updated location from TRIGGERED');
             ParseService.savePush('pushTriggered', triggeredTime);
         });   
-    });
-
-    $rootScope.$on('$cordovaLocalNotification:clear', function (event, notification, state) {
-        console.log('CLEARED', event, notification, state);
-        $cordovaDialogs.alert('Now let\'s schedule another :)', 'Thanks!');
-        var acknowledgedTime = new Date();
-        ParseService.getCurrentPosition().then(function(coords) {
-            console.log('updated location from CLEARED');
-            ParseService.savePush('pushAcknowledged', acknowledgedTime);
-        });
+        if (state == "foreground") {
+            $cordovaDialogs.confirm('Acknowledge me :)', 'Push', ['Ack', 'Cancel'])
+            .then(function(buttonIndex) {
+                if (buttonIndex == 1) $rootScope.$emit('$cordovaLocalNotification:click', notification);
+            });
+        }
     });
 
     $rootScope.$on('$cordovaLocalNotification:click', function (event, notification, state) {
         console.log('CLICKED', event, notification, state, notification.id);
-        $cordovaDialogs.alert('Now let\'s schedule another :)', 'Thanks!');
-        var acknowledgedTime = new Date();
-        ParseService.getCurrentPosition().then(function(coords) {
-            console.log('updated location from CLICKED');
-            ParseService.savePush('pushAcknowledged', acknowledgedTime);
-        });
+        $rootScope.acknowledge(notification);
     });
 
+    $rootScope.$on('$cordovaLocalNotification:clear', function (event, notification, state) {
+        console.log('CLEARED', event, notification, state);
+        $rootScope.acknowledge(notification);
+    });
+
+    $rootScope.acknowledge = function(notification) {
+        ParseService.getCurrentPosition().then(function(coords) {
+            var acknowledgedTime = new Date();
+            console.log('updated location from $rootScope.acknowledge');
+            ParseService.savePush('pushAcknowledged', acknowledgedTime);
+            cordova.plugins.notification.local.clearAll();
+            var pushData = eval("(" + notification.data + ")");
+            console.log('pushData:', pushData);
+            // Branch based on what function scheduled th notification
+            if (pushData.func != 'multiple') {
+                // For single pushes ask for a repeat
+                $cordovaDialogs.confirm('The same again sir? :)', 'CLICKED', ['YAY', 'NAY'])
+                .then(function(buttonIndex) {
+                    if (buttonIndex == 1) {
+                        if (pushData.func == 'now') Push.now();
+                        else if (pushData.func == 'schedule') Push.schedule(pushData.minutes);
+                        else alert('Dev screwed up...');
+                    }
+                });
+            } else {
+            }
+        });
+    };
 
 })
 
