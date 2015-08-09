@@ -167,17 +167,40 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
 
 
 
-.controller('TabsCtrl', function($scope, $window, $ionicDeploy, $cordovaDialogs, User) {
+.controller('SettingsCtrl', function($scope, $ionicDeploy, $cordovaDialogs) {
 
-    $scope.logout = function() {
-        User.destroySession();
-        $window.location.href = 'index.html';
+    $scope.testSMS = function() {
+        to = '+447809146848';
+        $cordovaDialogs.confirm('This cost be money. DBAD.', 'SMS Test', ['Test', 'Cancel'])
+        .then(function(buttonIndex) {
+            if (buttonIndex == 1) {
+                // Send SMS via Parse Cloud Code
+                Parse.Cloud.run('sendSMS', { to: to }, {
+                    success: function() {
+                    },
+                    error: function() {
+                    }
+                });
+            }
+        });
     };
+
+    $scope.jsconsoleToggle = function(checked) {
+        var head = document.getElementsByTagName('head')[0];
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'http://jsconsole.com/remote.js?AirConApp';
+        if (checked == true) head.appendChild(script);
+    }
 
     // IONIC.IO DEPLOY CODE
     // Update app code with new release from Ionic Deploy
+
+    $scope.hasUpdate = null;
+
     $scope.doUpdate = function() {
-        if (!hasUpdate) $cordovaDialogs.alert('No update available', 'Heads Up');
+        if ($scope.hasUpdate === null) $cordovaDialogs.alert('Other button first', 'Woah there!');
+        else if (!$scope.hasUpdate) $cordovaDialogs.alert('I already said no update', 'Pay attention');
         else {
             $ionicDeploy.update().then(function(res) {
                 console.log('Ionic Deploy: Update Success! ', res);
@@ -203,4 +226,15 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
             $cordovaDialogs.alert('Error occurred', 'Heads Up');
         });
     }
+}) 
+
+
+
+.controller('TabsCtrl', function($scope, $window, User) {
+
+    $scope.logout = function() {
+        User.destroySession();
+        $window.location.href = 'index.html';
+    };
+
 });    

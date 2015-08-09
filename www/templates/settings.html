@@ -1,0 +1,39 @@
+<ion-view view-title="Settings | {{ username }}" >
+  <ion-content scroll="false" class="settings-page">
+
+    <div class="row">
+      <div class="col">
+        <button class="button button-block" ng-click="checkForUpdates()">
+          Check For Updates
+        </button>
+      </div>
+      <div class="col">
+        <button class="button button-block button-positive" ng-click="doUpdate()">
+          Apply Update
+        </button>
+      </div>
+    </div>
+
+    
+    <ul class="list">
+      <li class="item item-toggle">
+         JS Console
+         <label class="toggle toggle-royal">
+           <input type="checkbox" ng-change="jsconsoleToggle(jscChecked)" ng-model="jscChecked" ng-disabled="jscChecked">
+           <div class="track">
+             <div class="handle"></div>
+           </div>
+         </label>
+      </li>
+    </ul>
+
+    <div class="row">
+      <div class="col">
+        <button class="button button-block button-balanced" ng-click="testSMS()">
+          SMS Test
+        </button>
+      </div>
+    </div>
+
+  </ion-content>
+</ion-view>

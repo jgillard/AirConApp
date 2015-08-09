@@ -124,6 +124,16 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         }
     })
 
+    .state('tab.settings', {
+        url: '/settings',
+        views: {
+            'tab-settings': {
+                templateUrl: 'templates/settings.html',
+                controller: 'SettingsCtrl'
+            }
+        }
+    })
+
     .state('splash', {
         url: '/',
         templateUrl: 'templates/splash.html',
