@@ -1,5 +1,5 @@
 <ion-view view-title="Home | {{ username }}" >
-  <ion-content scroll="false">
+  <ion-content scroll="false" class="home-page">
 
     <!-- DEBUG TOP ROW -->
 
@@ -21,11 +21,11 @@
 
     <div class="row">
       <div class="col card">
-        <form ng-submit="pushSchedule(form.minutes)" class="login-form">
+        <form ng-submit="pushSchedule(localMinutes)" class="login-form">
           <div class="card">
             <div class="list">
               <label class="item item-input">
-                <input type="number" ng-model="form.minutes" placeholder="When?">
+                <input type="number" ng-model="localMinutes" placeholder="When?">
               </label>
             </div>
           </div>
@@ -39,18 +39,18 @@
       </div>
 
       <div class="col card">
-        <form ng-submit="pushMultiple(form.interval, form.end)" class="login-form">
+        <form ng-submit="pushMultiple(interval, end)" class="login-form">
           <div class="card">
             <div class="list">
               <label class="item item-input">
-                <input type="number" ng-model="form.interval" placeholder="Interval?">
+                <input type="number" ng-model="interval" placeholder="Interval?">
               </label>
             </div>
           </div>  
           <div class="card">
             <div class="list">
               <label class="item item-input">
-                <input type="time" ng-model="form.end" placeholder="End?">
+                <input type="time" ng-model="end" placeholder="End?">
               </label>
             </div>
           </div>      
@@ -67,15 +67,21 @@
     
     <div class="row">
       <div class="col">
-        <div class="">
-          <button class="button button-block button-positive" ng-click="isScheduled()">
-            Is Scheduled?
-          </button>
-        </div>
+        <button class="button button-block button-positive" ng-click="isScheduled()">
+          Is Scheduled?
+        </button>
       </div>
       <div class="col">
         <button class="button button-block button-assertive" ng-click="cancelAll()">
-          OMG STFU!
+          Shush!
+        </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <button class="button button-block button-positive" ng-click="getAll()">
+          Pick up the stragglers
         </button>
       </div>
     </div>

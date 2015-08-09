@@ -1,7 +1,7 @@
 angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy', 'ngCordova', 'AirConApp.controllers', 'AirConApp.services'])
 
-.run(function($ionicPlatform, $state, $rootScope, $cordovaDialogs,
-            $cordovaVibration, User, ParseService, Connection) {
+.run(function($ionicPlatform, $state, $rootScope, $cordovaDialogs, $cordovaVibration,
+        $cordovaLocalNotification, User, Push, ParseService, Connection) {
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs)
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {

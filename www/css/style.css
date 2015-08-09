@@ -3,6 +3,10 @@
   font-weight: bolder;
 }
 
+.row {
+  padding: 0;
+}
+
 /* Splash page stylings */
 .splash-page {
   background: black;
@@ -29,4 +33,10 @@
   text-align: center;
   font-weight: bold;
   cursor: pointer;
+}
+
+/* Home page stylings */
+.home-page .button.button-block {
+  margin-top: 8px;
+  margin-bottom: 8px;
 }

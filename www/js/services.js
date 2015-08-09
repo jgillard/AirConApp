@@ -60,11 +60,11 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
 
 
 
-.factory('Push', function($q) {
+.factory('Push', function($q, $cordovaLocalNotification) {
     var o = {};
 
     o.now = function() {
-       cordova.plugins.notification.local.schedule({
+       $cordovaLocalNotification.schedule({
             id: 0,
             text: 'My first notification',
             data: { key: 'value' },
@@ -77,7 +77,7 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
         var scheduleTime = new Date();
         // scheduleTime.setMinutes(scheduleTime.getMinutes() + minutes);
         scheduleTime.setSeconds(scheduleTime.getSeconds() + minutes); // for development
-        cordova.plugins.notification.local.schedule({
+        $cordovaLocalNotification.schedule({
             id: 0,
             text: 'My first notification',
             firstAt: scheduleTime,
@@ -118,6 +118,12 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
             nextPush.setMinutes(nextPush.getMinutes() + interval);
         }
     };
+
+    o.countScheduled = function() {
+        $cordovaLocalNotification.getAllScheduled(function (response) {
+            console.log('countScheduled: ' + response);
+        });
+    }
 
     return o;
 })

@@ -8,6 +8,9 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
     $scope.username = User.username;
     $scope.gotLoc = false;
 
+    // Defaults for development
+    $scope.localMinutes = 5;
+
 
     $scope.init = function() {
         console.log('HomeCtrl scope.init getCurrentPosition');
@@ -21,13 +24,11 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
     };
 
     $scope.pushSchedule = function(minutes) {
-        $scope.locate();
         if (minutes) Push.schedule(minutes);
         else $cordovaDialogs.alert('Set the time interval', 'Heads Up');
     };
 
     $scope.pushMultiple = function(interval, end) {
-        // $scope.locate();
         if (interval && end) Push.multiple(interval, end);
         else $cordovaDialogs.alert('You missed something', 'Heads Up');
 
@@ -52,6 +53,12 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
             $cordovaDialogs.alert('Thank fuck');
         }, this);
     };
+
+    $scope.getAll = function() {
+        cordova.plugins.notification.local.getAll(function (notifications) {
+            console.info('Stragglers:', notifications);
+        });
+    }
 
     /* GEOLOCATION STUFF */
 
