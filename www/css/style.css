@@ -3,36 +3,72 @@
   font-weight: bolder;
 }
 
+body {
+  font-family: 'Roboto', Verdana, Geneva, sans-serif;
+}
+
 .row {
   padding: 0;
 }
 
 /* Splash page stylings */
 .splash-page {
-  background: black;
-}
-
-.splash-page .card {
-  margin-top: 20px;
+  background: #607D8B;
+  font-weight: 500;
+  color: white;
 }
 
 .splash-page .logo h1 {
   margin-top: 30px;
   text-align: center;
-  color: #fff !important;
-  font-family: Verdana, Geneva, sans-serif;
-  font-weight: bold;
-  letter-spacing: -3px;
+  font-weight: 300;
+  color: white;
+  letter-spacing: -2px;
   font-size: 42px;
 }
 
-.splash-page .signup-opt {
-  color: #fff;
-  padding: 15px;
-  margin-top: 20px;
+.splash-page .card {
+  margin-top: 15px;
+}
+
+
+.splash-page .item-input {
+  min-height: 70px;
+}
+
+.splash-page input[type="text"] {
+  padding-left: 10px;
+}
+
+.splash-page .button {
+  color: white;
+  margin: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.splash-page .button-sign-in {
+  background-color: #65caff;
+  border-color: #65caff;
+}
+
+.splash-page .button-sign-up {
+  background-color: #81C784;
+  border-color: #81C784;
+}
+
+.splash-page .splash-text {
+  font-size: 14px;
+  opacity: 0.7;
+  padding: 0px;
+  margin-top: 35px;
   text-align: center;
-  font-weight: bold;
   cursor: pointer;
+}
+
+.splash-page #splash-version {
+  position: fixed;
+  width: 100%;
+  bottom: 20px;
 }
 
 /* Home page stylings */

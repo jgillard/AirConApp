@@ -6,59 +6,54 @@
     </div>
 
     <form ng-submit="submitForm(username, password, email, signingUp)" class="login-form">
-      <div class="card" ng-show="signingUp">
-        <div class="list">
-          <label class="item item-input">
-            <input type="text" ng-model="email" placeholder="Enter your {{ signingUp ? 'desired' : '...' }} email address">
-          </label>
-        </div>
+
+      <div class="list card">
+        
+        <label class="item item-input">
+          <i class="icon ion-person placeholder-icon"></i>
+          <input type="text" ng-model="username" placeholder="Username" >
+        </label>
+        <label class="item item-input">
+          <i class="icon ion-locked placeholder-icon"></i>
+          <input type="text" ng-model="password" placeholder="Password">
+        </label>
+
+        <label class="item item-input" ng-show="signingUp">
+          <i class="icon ion-email placeholder-icon"></i>
+          <input type="text" ng-model="email" placeholder="Email Address">
+        </label>
       </div>
-      <div class="card">
-        <div class="list">
-          <label class="item item-input">
-            <input type="text" ng-model="username" placeholder="Enter your {{ signingUp ? 'desired' : '...' }} username" >
-          </label>
-        </div>
-      </div>
-      <div class="card">
-        <div class="list">
-          <label class="item item-input">
-            <input type="text" ng-model="password" placeholder="Enter your {{ signingUp ? 'desired' : '...' }} password">
-          </label>
-        </div>
-      </div>
-      
+
       <div class="padding-left padding-right">
         <button class="button button-block action-button" type="submit"
-                ng-class="{'button-positive': !signingUp, 'button-balanced': signingUp}">
+                ng-class="{'button-sign-in': !signingUp, 'button-sign-up': signingUp}">
           {{ signingUp ? 'Sign up' : 'Sign in' }}
         </button>
       </div>
     </form>
 
-    <div class="padding signup-opt" ng-click="signingUp = !signingUp">
+    <div class="padding splash-text" ng-click="resetPW(email)">
+      {{ signingUp ? '' : 'Forgotten your password?' }}
+    </div>
+
+    <div class="padding splash-text" ng-click="signingUp = !signingUp">
       {{ signingUp ? 'Have an account? Sign in!' : 'Need an account? Sign up!' }}
     </div>
 
-    <div class="padding signup-opt"
-    <a ng-click="openModal()" onclick="rick.play()" >
-      <audio id="rick" src="https://p.scdn.co/mp3-preview/f60c420261754542594ddb4a46ed42972d2b9fd0"></audio>
-    </a> {{ signingUp ? '' : 'Forgotten your password?' }}
+    <div class="padding splash-text" id="splash-version"
+      <a ng-click="openModal()" onclick="rick.play()" >
+        <audio id="rick" preload="auto" src="https://p.scdn.co/mp3-preview/f60c420261754542594ddb4a46ed42972d2b9fd0"></audio>
+      </a>
+      v0.1.0
     </div>
 
     <script id="my-modal.html" type="text/ng-template">
       <ion-modal-view>
-        <ion-content>
-          <img src="http://img1.wikia.nocookie.net/__cb20130318151721/epicrapbattlesofhistory/images/6/6d/Rick-astley.jpg" style="width: 100%">
+        <ion-content style="background: black;">
+          <img src="../img/rick.jpg" style="width: 100%">
         </ion-content>
       </ion-modal-view>
     </script>
-    
 
   </ion-content>
 </ion-view>
-
-
-<!-- <div class="padding signup-opt" ng-click="resetPW(email)">
-       {{ signingUp ? '' : 'Forgotten your password?' }}
-     </div> -->

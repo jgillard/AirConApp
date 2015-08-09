@@ -26,7 +26,11 @@
     "cordova-plugin-geolocation",
     "cordova.plugins.diagnostic",
     "cordova-plugin-dialogs",
-    "cordova-plugin-vibration"
+    "cordova-plugin-vibration",
+    {
+      "locator": "https://github.com/apache/cordova-plugin-statusbar.git",
+      "id": "cordova-plugin-statusbar"
+    }
   ],
   "cordovaPlatforms": [
     "android",

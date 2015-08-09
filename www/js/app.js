@@ -1,7 +1,7 @@
 angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy', 'ngCordova', 'AirConApp.controllers', 'AirConApp.services'])
 
 .run(function($ionicPlatform, $state, $rootScope, $cordovaDialogs, $cordovaVibration,
-        $cordovaLocalNotification, User, Push, ParseService, Connection) {
+        $cordovaLocalNotification, $cordovaStatusbar, User, Push, ParseService, Connection) {
     'use strict';
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs)
@@ -9,10 +9,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
             cordova.plugins.Keyboard.disableScroll(true);
         }
-        if (window.StatusBar) {
-            // org.apache.cordova.statusbar required
-            StatusBar.styleLightContent();
-        }
+        StatusBar.backgroundColorByHexString('#455A64');
 
         Parse.initialize(config.PARSE_APPLICATION_ID, config.PARSE_JAVASCRIPT_KEY);
         Parse.User.enableRevocableSession();
