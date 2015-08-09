@@ -1,6 +1,7 @@
 angular.module('AirConApp.services', ['AirConApp.utils'])
 
 .factory('ParseService', function($q, $cordovaGeolocation) {
+    'use strict';
     var o = {
         latitude: '',
         longitude: '',
@@ -9,7 +10,7 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
 
     o.savePush = function(key, value) {
         var user = Parse.User.current();
-        var Status = Parse.Object.extend("Pushes");
+        var Status = Parse.Object.extend('Pushes');
         var status = new Status();
         status.set(key, value);
         status.set('user', user);
@@ -28,15 +29,16 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
 
     o.locationEnabled = function() {
         cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
-            console.log("Location is " + (enabled ? "enabled" : "disabled"));
+            console.log('Location is ' + (enabled ? 'enabled' : 'disabled'));
             if (!enabled) cordova.plugins.diagnostic.switchToLocationSettings();
         }, function(error){
-            console.log("The following error occurred: "+error);
+            console.log('The following error occurred: '+error);
             alert('Locate error', 'Uh oh :S');
-        });    
+        });
     };
 
-    o.getCurrentPosition = function() {
+    o.getCurrentPosition = function(timeout) {
+        if (typeof timeout === 'undefined') timeout = 5000;
         var defer = $q.defer();
         // 5 second timeout, 5 minute maxAge
         var posOptions = {timeout: 10000, maximumAge: 300000, enableHighAccuracy: false};
@@ -61,6 +63,7 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
 
 
 .factory('Push', function($q, $cordovaLocalNotification) {
+    'use strict';
     var o = {};
 
     o.now = function() {
@@ -89,7 +92,7 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
     o.multiple = function(interval, end, callback) {
         // Cancel existing scheduling
         $cordovaLocalNotification.cancelAll();
-        
+
         // Create correct Date object from 'end' (it returns 1970)
         var endTime = new Date();
         endTime.setHours(end.getHours());
@@ -107,7 +110,7 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
         var nextPush = new Date();
         for (var i = 0; i < numPushes; i++) {
             nextPush.setMinutes(nextPush.getMinutes() + interval);
-            nextPush2 = Math.round(nextPush.getTime() / 1000);
+            var nextPush2 = Math.round(nextPush.getTime() / 1000);
             pushArray[i] = {
                 id: i,
                 text: 'Schedule Multiple Pushes',
@@ -132,6 +135,7 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
 
 
 .factory('Connection', function($cordovaDialogs) {
+    'use strict';
     var o = {};
 
     o.checkConnection = function() {
@@ -146,31 +150,32 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
                });
             }
         }
-    }
-    
+    };
+
     return o;
 })
 
 
 
 .factory('User', function($http, $q, $localstorage) {
+    'use strict';
     var o = {
         username: false,
     };
 
     o.auth = function(username, password, email, number, signingUp) {
-        console.log('Attempting login: ' + username, password, email, number, signingUp)
+        console.log('Attempting login: ' + username, password, email, number, signingUp);
         var user = new Parse.User();
-        user.set("username", username);
-        user.set("password", password);
+        user.set('username', username);
+        user.set('password', password);
         if (signingUp) {
-            user.set("email", email);
-            user.set("phonenumber", phonenumber);
+            user.set('email', email);
+            user.set('phonenumber', number);
             return user.signUp(null, {
                 success: function(user) {
                     o.setSession(username);
                     console.log('User signed up');
-                } 
+                }
             });
         } else {
             return Parse.User.logIn(username, password, {

@@ -1,10 +1,10 @@
 angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirConApp.services'])
 
-
-.controller('HomeCtrl', function($scope, $timeout, $http, $cordovaLocalNotification, 
-            $cordovaGeolocation, $ionicLoading, $cordovaDialogs, $ionicPlatform, 
+.controller('HomeCtrl', function($scope, $timeout, $http, $cordovaLocalNotification,
+            $cordovaGeolocation, $ionicLoading, $cordovaDialogs, $ionicPlatform,
             User, Push, ParseService) {
-    
+    'use strict';
+
     $scope.username = User.username;
     $scope.gotLoc = false;
 
@@ -20,7 +20,7 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
     /* PUSH NOTIFICATION STUFF */
 
     $scope.pushNow = function() {
-        Push.now()
+        Push.now();
     };
 
     $scope.pushSchedule = function(minutes) {
@@ -36,12 +36,10 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
         else $cordovaDialogs.alert('You missed something', 'Heads Up');
 
     };
- 
-    $scope.isScheduled = function() { 
-        var scheduleTime;
+
+    $scope.isScheduled = function() {
         // Only deals with single scheduled push (deal with multiple and zero)
-        cordova.plugins.notification.local.getAllScheduled(function (response) {
-            var now = Date.now();
+        $cordovaLocalNotification.getAllScheduled(function (response) {
             if (!response[0]) $cordovaDialogs.alert('No pushes scheduled', 'Nope!');
             else {
                 console.log(response);
@@ -56,17 +54,18 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
         });
     };
 
-    $scope.cancelAll = function() { 
-        cordova.plugins.notification.local.cancelAll(function() {
+    $scope.cancelAll = function() {
+        $cordovaLocalNotification.cancelAll(function() {
             $cordovaDialogs.alert('Thank fuck');
         }, this);
     };
 
     $scope.getAll = function() {
-        cordova.plugins.notification.local.getAll(function (notifications) {
+        $cordovaLocalNotification.getAll(function (notifications) {
             console.info('Stragglers:', notifications);
+            alert(notifications.length);
         });
-    }
+    };
 
     /* GEOLOCATION STUFF */
 
@@ -87,7 +86,7 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
             $scope.hideLocating();
             $cordovaDialogs.alert('getCurrentPos error:' + message, 'Uh oh :S');
         });
-    }
+    };
 
     $scope.showLocating = function() {
         $ionicLoading.show({
@@ -106,7 +105,8 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
 
 
 .controller('SplashCtrl', function($scope, $state, $cordovaDialogs, $ionicModal, User) {
-    
+    'use strict';
+
     // Defaults for development
     $scope.username = 'James';
     $scope.password = 'James';
@@ -129,7 +129,7 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
             } else {
                 $scope.callAuth(username, password, email, undefined, signingUp);
             }
-            
+
         });
     };
 
@@ -139,7 +139,7 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
         }, function(error) {
             $cordovaDialogs.alert(error.message, 'Error: ' + error.code, 'Try again!');
             console.log('User.auth ' + error.message + ' Error: ' + error.code);
-        })
+        });
     };
 
     $scope.resetPW = function(email) {
@@ -168,9 +168,10 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
 
 
 .controller('SettingsCtrl', function($scope, $ionicDeploy, $cordovaDialogs) {
+    'use strict';
 
     $scope.testSMS = function() {
-        to = '+447809146848';
+        var to = '+447809146848';
         $cordovaDialogs.confirm('This cost be money. DBAD.', 'SMS Test', ['Test', 'Cancel'])
         .then(function(buttonIndex) {
             if (buttonIndex == 1) {
@@ -190,8 +191,8 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
         var script = document.createElement('script');
         script.type = 'text/javascript';
         script.src = 'http://jsconsole.com/remote.js?AirConApp';
-        if (checked == true) head.appendChild(script);
-    }
+        if (checked === true) head.appendChild(script);
+    };
 
     // IONIC.IO DEPLOY CODE
     // Update app code with new release from Ionic Deploy
@@ -225,16 +226,18 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
             console.error('Ionic Deploy: Unable to check for updates', err);
             $cordovaDialogs.alert('Error occurred', 'Heads Up');
         });
-    }
-}) 
+    };
+
+})
 
 
 
 .controller('TabsCtrl', function($scope, $window, User) {
+    'use strict';
 
     $scope.logout = function() {
         User.destroySession();
         $window.location.href = 'index.html';
     };
 
-});    
+});

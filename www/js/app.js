@@ -2,6 +2,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
 
 .run(function($ionicPlatform, $state, $rootScope, $cordovaDialogs, $cordovaVibration,
         $cordovaLocalNotification, User, Push, ParseService, Connection) {
+    'use strict';
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs)
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -12,13 +13,13 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
             // org.apache.cordova.statusbar required
             StatusBar.styleLightContent();
         }
-        
+
         Parse.initialize(config.PARSE_APPLICATION_ID, config.PARSE_JAVASCRIPT_KEY);
         Parse.User.enableRevocableSession();
         // $ionicAnalytics.register();
         Connection.checkConnection();
         $cordovaVibration.vibrate(100);
-        
+
         $ionicPlatform.on('resume', function(){
             console.info('resume');
             Connection.checkConnection();
@@ -26,30 +27,30 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         });
     });
 
-    
+
     $rootScope.$on('$cordovaLocalNotification:schedule', function (event, notification, state) {
         console.log('SCHEDULED', event, notification, state);
         var scheduledTime = new Date(notification.at * 1000);
         var deltat = Math.round((scheduledTime - Date.now()) / 1000);
-        ParseService.getCurrentPosition().then(function(coords) {
+        ParseService.getCurrentPosition().then(function() {
             console.log('updated location from SCHEDULED');
             ParseService.savePush('pushScheduled', scheduledTime);
-        });  
+        });
         $cordovaLocalNotification.getAllScheduled(function (response) {
             if (deltat > 0 && response.length == 1) {
-                $cordovaDialogs.alert('Next push in ' + deltat + ' seconds', 'Success');      
+                $cordovaDialogs.alert('Next push in ' + deltat + ' seconds', 'Success');
             }
         });
     });
 
     $rootScope.$on('$cordovaLocalNotification:trigger', function (event, notification, state) {
         console.log('TRIGGERED', event, notification, state);
-        var triggeredTime = new Date();      
-        ParseService.getCurrentPosition().then(function(coords) {
+        var triggeredTime = new Date();
+        ParseService.getCurrentPosition().then(function() {
             console.log('updated location from TRIGGERED');
             ParseService.savePush('pushTriggered', triggeredTime);
-        });   
-        if (state == "foreground") {
+        });
+        if (state == 'foreground') {
             $cordovaDialogs.confirm('Acknowledge me :)', 'Push', ['Ack', 'Cancel'])
             .then(function(buttonIndex) {
                 if (buttonIndex == 1) $rootScope.$emit('$cordovaLocalNotification:click', notification);
@@ -68,12 +69,12 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
     });
 
     $rootScope.acknowledge = function(notification) {
-        ParseService.getCurrentPosition().then(function(coords) {
+        ParseService.getCurrentPosition().then(function() {
             var acknowledgedTime = new Date();
             console.log('updated location from $rootScope.acknowledge');
             ParseService.savePush('pushAcknowledged', acknowledgedTime);
-            cordova.plugins.notification.local.clearAll();
-            var pushData = eval("(" + notification.data + ")");
+            $cordovaLocalNotification.clearAll();
+            var pushData = eval('(' + notification.data + ')');
             console.log('pushData:', pushData);
             // Branch based on what function scheduled th notification
             if (pushData.func != 'multiple') {
@@ -94,6 +95,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
+    'use strict';
     $stateProvider
 
     // setup an abstract state for the tabs directive
@@ -110,9 +112,9 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         onEnter: function($state, User) {
             User.checkSession().then(function(hasSession) {
                 if (!hasSession) $state.go('splash');
-            })
+            });
         }
-    }) 
+    })
 
     .state('tab.home', {
         url: '/home',
@@ -143,7 +145,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         //         if (hasSession) $state.go('tab.home');
         //     })
         // }
-    })
+    });
 
     // if none of the above states are matched, use this as the fallback
     $urlRouterProvider.otherwise('/');
