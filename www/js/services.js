@@ -39,7 +39,7 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
     o.getCurrentPosition = function() {
         var defer = $q.defer();
         // 5 second timeout, 5 minute maxAge
-        var posOptions = {timeout: 5000, maximumAge: 300000, enableHighAccuracy: false};
+        var posOptions = {timeout: 10000, maximumAge: 300000, enableHighAccuracy: false};
         $cordovaGeolocation.getCurrentPosition(posOptions)
             .then(function (position) {
                 console.log(position);
@@ -66,8 +66,8 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
     o.now = function() {
        $cordovaLocalNotification.schedule({
             id: 0,
-            text: 'My first notification',
-            data: { key: 'value' },
+            text: 'Test Push Now',
+            data: { func: 'now' },
             icon: 'file://img/doge.jpg',
             sound: 'file://sound/eagle.wav'
         });
@@ -79,18 +79,16 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
         scheduleTime.setSeconds(scheduleTime.getSeconds() + minutes); // for development
         $cordovaLocalNotification.schedule({
             id: 0,
-            text: 'My first notification',
-            firstAt: scheduleTime,
-            data: { key: 'value' },
+            text: 'Schedule Local Push',
+            at: scheduleTime,
+            data: { func: 'schedule', minutes: minutes},
             icon: 'file://img/doge.jpg'
         });
     };
 
-    o.multiple = function(interval, end) {
+    o.multiple = function(interval, end, callback) {
         // Cancel existing scheduling
-        cordova.plugins.notification.local.cancelAll(function() {
-            console.log('All previous multiple push schedules cancelled');
-        }, this);
+        $cordovaLocalNotification.cancelAll();
         
         // Create correct Date object from 'end' (it returns 1970)
         var endTime = new Date();
@@ -98,25 +96,28 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
         endTime.setMinutes(end.getMinutes());
 
         var now = new Date();
-        var nextPush = new Date(now.getTime() + interval * 60000);
         var deltaMins = Math.round((endTime - now) / 60000);
         var numPushes = Math.round(deltaMins / interval);
 
         console.log('Multiple Scheduling Calcs', {end: end, endGetTime: end.getTime(), endTime: endTime,
-                endNewGetTime: endTime.getTime(), nowGetTime: now.getTime(), firstPush: nextPush,
+                endNewGetTime: endTime.getTime(), nowGetTime: now.getTime(),
                 deltaMins: deltaMins, numPushes: numPushes});
 
+        var pushArray = [];
+        var nextPush = new Date();
         for (var i = 0; i < numPushes; i++) {
-            cordova.plugins.notification.local.schedule({
-                id: i,
-                text: 'My repeat notification',
-                // every: interval, // string only in iOS (e.g. 'minutes', 'hours')
-                firstAt: nextPush,
-                data: { key: 'value' },
-                icon: 'file://img/doge.jpg'
-            });
             nextPush.setMinutes(nextPush.getMinutes() + interval);
+            nextPush2 = Math.round(nextPush.getTime() / 1000);
+            pushArray[i] = {
+                id: i,
+                text: 'Schedule Multiple Pushes',
+                // every: interval, // string only in iOS (e.g. 'minutes', 'hours')
+                at: nextPush2,
+                data: { func: 'multiple' },
+                icon: 'file://img/doge.jpg'
+            };
         }
+        $cordovaLocalNotification.schedule(pushArray); 
     };
 
     o.countScheduled = function() {

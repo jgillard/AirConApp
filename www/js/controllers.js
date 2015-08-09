@@ -29,7 +29,10 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
     };
 
     $scope.pushMultiple = function(interval, end) {
-        if (interval && end) Push.multiple(interval, end);
+        if (interval && end) {
+            Push.multiple(interval, end, $scope.isScheduled);
+            alert('Totes done, honest');
+        }
         else $cordovaDialogs.alert('You missed something', 'Heads Up');
 
     };
@@ -41,7 +44,12 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
             var now = Date.now();
             if (!response[0]) $cordovaDialogs.alert('No pushes scheduled', 'Nope!');
             else {
-                var deltat = Math.round(response[0].at - now / 1000);
+                console.log(response);
+                var nextPush = 1893455940;
+                for (var push = 0; push < response.length; push++) {
+                    if (response[push].at < nextPush) nextPush = response[push].at;
+                }
+                var deltat = Math.round(nextPush - now/1000);
                 console.log(response.length + ' push(es) scheduled for ' + deltat + ' seconds time!');
                 $cordovaDialogs.alert(response.length + ' push(es) scheduled for ' + deltat + ' seconds time!', 'Heads Up');
             }      

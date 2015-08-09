@@ -6,6 +6,8 @@ www/lib/
 
 *.sublime-workspace
 *.sublime-project
+*.keystore
 
 .io-config.json
 config.js
+build.json
