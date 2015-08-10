@@ -10,11 +10,11 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
 
     // Defaults for development
     $scope.localMinutes = 5;
-
+    $scope.end = new Date();
 
     $scope.init = function() {
         console.log('HomeCtrl scope.init getCurrentPosition');
-        $scope.getCurrentPosition();
+        $scope.getCurrentPosition(10000);
     };
 
     /* PUSH NOTIFICATION STUFF */
@@ -31,7 +31,6 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
     $scope.pushMultiple = function(interval, end) {
         if (interval && end) {
             Push.multiple(interval, end, $scope.isScheduled);
-            alert('Totes done, honest');
         }
         else $cordovaDialogs.alert('You missed something', 'Heads Up');
 
@@ -39,18 +38,21 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
 
     $scope.isScheduled = function() {
         // Only deals with single scheduled push (deal with multiple and zero)
-        $cordovaLocalNotification.getAllScheduled(function (response) {
-            if (!response[0]) $cordovaDialogs.alert('No pushes scheduled', 'Nope!');
-            else {
-                console.log(response);
-                var nextPush = 1893455940;
-                for (var push = 0; push < response.length; push++) {
-                    if (response[push].at < nextPush) nextPush = response[push].at;
-                }
-                var deltat = Math.round(nextPush - now/1000);
-                console.log(response.length + ' push(es) scheduled for ' + deltat + ' seconds time!');
-                $cordovaDialogs.alert(response.length + ' push(es) scheduled for ' + deltat + ' seconds time!', 'Heads Up');
-            }      
+        cordova.plugins.notification.local.getScheduled(function (response) {
+            if (!response[0]) {
+                $cordovaDialogs.alert('No pushes scheduled', 'Nope!');
+                return;
+            }
+            console.log(response);
+            var numPush = response.length;
+            var nextPush = 1893455940;
+            for (var push = 0; push < numPush; push++) {
+                if (response[push].at < nextPush) nextPush = response[push].at;
+            }
+            var deltat = Math.round(nextPush - Date.now()/1000);
+            console.log(numPush + ' push(es) scheduled in ' + deltat + ' seconds');
+            if (numPush > 1) $cordovaDialogs.alert(numPush + ' pushes scheduled\nFirst in ' + deltat + ' seconds', 'News Alert');
+            else $cordovaDialogs.alert(numPush + ' push scheduled for ' + deltat + ' seconds time!', 'News Alert');
         });
     };
 
@@ -77,8 +79,8 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
         $scope.getCurrentPosition();
     };
 
-    $scope.getCurrentPosition = function() {
-        ParseService.getCurrentPosition().then(function(coords) {
+    $scope.getCurrentPosition = function(timeout) {
+        ParseService.getCurrentPosition(timeout).then(function(coords) {
             $scope.hideLocating();
             if (coords.accuracy > 100) console.log('Location Accuracy Poor');
             $scope.gotLoc = true;
@@ -112,25 +114,36 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
     $scope.password = 'James';
 
     $scope.submitForm = function(username, password, email, signingUp) {
+        if (!username) {
+            $cordovaDialogs('Please enter a username', 'Username', 'OK'); return;
+        } else if (!password) {
+            $cordovaDialogs('Please enter a password', 'Username', 'OK'); return;
+        } else if (!email && signingUp) {
+            $cordovaDialogs('Please enter an email address', 'Email', 'OK'); return;
+        }
+
         // Logout existing user session
-        var currentUser = Parse.User.current();
-        if (currentUser) Parse.destroySession;
+        if (Parse.User.current()) Parse.destroySession;
 
-        window.plugins.phonenumber.get(function(phoneNum) {
-            console.log('phoneNum: ' + phoneNum);
-            $scope.callAuth(username, password, email, phoneNum, signingUp);
-        }, function(error) {
-            console.log(error);
-            if (signingUp) {
-                $cordovaDialogs.prompt('Please enter this phone\'s number', error, ['Submit'])
-                .then(function(result) {
-                    $scope.callAuth(username, password, email, result.input1, signingUp);
-                });
-            } else {
-                $scope.callAuth(username, password, email, undefined, signingUp);
-            }
+        if (window.plugins) {
+            window.plugins.phonenumber.get(function(phoneNum) {
+                console.log('phoneNum: ' + phoneNum);
+                $scope.callAuth(username, password, email, phoneNum, signingUp);
+            }, function(error) {
+                console.log(error);
+                if (signingUp) {
+                    $cordovaDialogs.prompt('Please enter this phone\'s number', error, ['Submit'])
+                    .then(function(result) {
+                        $scope.callAuth(username, password, email, result.input1, signingUp);
+                    });
+                } else {
+                    $scope.callAuth(username, password, email, undefined, signingUp);
+                }
+            });
+        } else {
+            $scope.callAuth(username, password, email, undefined, signingUp);
+        }
 
-        });
     };
 
     $scope.callAuth = function(username, password, email, phoneNum, signingUp) {

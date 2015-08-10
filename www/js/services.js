@@ -5,7 +5,8 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
     var o = {
         latitude: '',
         longitude: '',
-        accuracy: ''
+        accuracy: '',
+        timestamp: ''
     };
 
     o.savePush = function(key, value) {
@@ -14,8 +15,16 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
         var status = new Status();
         status.set(key, value);
         status.set('user', user);
-        var location = {lat: o.latitude, long: o.longitude, acc: o.accuracy};
-        if (location.latitude == '') console.error('services:savePush location data empty');
+        if (Date.now() - o.timestamp > 300000) {
+            var location = 'should really deal with this';
+            alert('old location data');
+        } else {
+            var location = {lat: o.latitude, long: o.longitude, acc: o.accuracy};
+            if (location.latitude === '') {
+                console.error('services:savePush location data empty');
+                alert('services:savePush location data empty');
+            }
+        }
         status.set('location', location);
         status.save(null, {
             success: function(status) {
@@ -41,14 +50,14 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
         if (typeof timeout === 'undefined') timeout = 5000;
         var defer = $q.defer();
         // 5 second timeout, 5 minute maxAge
-        var posOptions = {timeout: 10000, maximumAge: 300000, enableHighAccuracy: false};
+        var posOptions = {timeout: timeout, maximumAge: 300000, enableHighAccuracy: false};
         $cordovaGeolocation.getCurrentPosition(posOptions)
             .then(function (position) {
-                console.log(position);
                 o.latitude = position.coords.latitude.toFixed(5);
                 o.longitude = position.coords.longitude.toFixed(5);
                 o.accuracy = Math.round(position.coords.accuracy);
-                defer.resolve(position.coords)
+                o.timestamp = position.timestamp;
+                defer.resolve(position.coords);
             }, function(err) {
                 console.error(err);
                 defer.reject('Could not get your location');
@@ -90,24 +99,18 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
     };
 
     o.multiple = function(interval, end, callback) {
-        // Cancel existing scheduling
         $cordovaLocalNotification.cancelAll();
 
-        // Create correct Date object from 'end' (it returns 1970)
-        var endTime = new Date();
-        endTime.setHours(end.getHours());
-        endTime.setMinutes(end.getMinutes());
-
         var now = new Date();
-        var deltaMins = Math.round((endTime - now) / 60000);
+        var deltaSecs = Math.round((end - now) / 1000);
+        var deltaMins = Math.round((deltaSecs) / 60);
         var numPushes = Math.round(deltaMins / interval);
 
-        console.log('Multiple Scheduling Calcs', {end: end, endGetTime: end.getTime(), endTime: endTime,
-                endNewGetTime: endTime.getTime(), nowGetTime: now.getTime(),
-                deltaMins: deltaMins, numPushes: numPushes});
+        console.log('Multiple Scheduling Calcs', {end: end, endGetTime: end.getTime(),
+                nowGetTime: now.getTime(), dMins: deltaMins, dSecs: deltaSecs, numPushes: numPushes});
 
         var pushArray = [];
-        var nextPush = new Date();
+        var nextPush = now;
         for (var i = 0; i < numPushes; i++) {
             nextPush.setMinutes(nextPush.getMinutes() + interval);
             var nextPush2 = Math.round(nextPush.getTime() / 1000);
@@ -120,7 +123,8 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
                 icon: 'file://img/doge.jpg'
             };
         }
-        $cordovaLocalNotification.schedule(pushArray); 
+        $cordovaLocalNotification.schedule(pushArray);
+        setTimeout(callback, 500);
     };
 
     return o;
