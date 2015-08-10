@@ -9,7 +9,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
             cordova.plugins.Keyboard.disableScroll(true);
         }
-        StatusBar.backgroundColorByHexString('#455A64');
+        if (window.cordova) StatusBar.backgroundColorByHexString('#455A64');
 
         Parse.initialize(config.PARSE_APPLICATION_ID, config.PARSE_JAVASCRIPT_KEY);
         Parse.User.enableRevocableSession();
@@ -26,11 +26,10 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
 
 
     $rootScope.$on('$cordovaLocalNotification:schedule', function (event, notification, state) {
-        console.log('SCHEDULED', event, notification, state);
+        console.log('SCHEDULED', notification, state);
         var scheduledTime = new Date(notification.at * 1000);
         var deltat = Math.round((scheduledTime - Date.now()) / 1000);
         ParseService.getCurrentPosition().then(function() {
-            console.log('updated location from SCHEDULED');
             ParseService.savePush('pushScheduled', scheduledTime);
         });
         $cordovaLocalNotification.getAllScheduled(function (response) {
@@ -41,10 +40,9 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
     });
 
     $rootScope.$on('$cordovaLocalNotification:trigger', function (event, notification, state) {
-        console.log('TRIGGERED', event, notification, state);
+        console.log('TRIGGERED',notification, state);
         var triggeredTime = new Date();
         ParseService.getCurrentPosition().then(function() {
-            console.log('updated location from TRIGGERED');
             ParseService.savePush('pushTriggered', triggeredTime);
         });
         if (state == 'foreground') {
@@ -56,19 +54,18 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
     });
 
     $rootScope.$on('$cordovaLocalNotification:click', function (event, notification, state) {
-        console.log('CLICKED', event, notification, state, notification.id);
+        console.log('CLICKED', notification, state, notification.id);
         $rootScope.acknowledge(notification);
     });
 
     $rootScope.$on('$cordovaLocalNotification:clear', function (event, notification, state) {
-        console.log('CLEARED', event, notification, state);
+        console.log('CLEARED', notification, state);
         $rootScope.acknowledge(notification);
     });
 
     $rootScope.acknowledge = function(notification) {
         ParseService.getCurrentPosition().then(function() {
             var acknowledgedTime = new Date();
-            console.log('updated location from $rootScope.acknowledge');
             ParseService.savePush('pushAcknowledged', acknowledgedTime);
             $cordovaLocalNotification.clearAll();
             var pushData = eval('(' + notification.data + ')');
@@ -76,7 +73,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
             // Branch based on what function scheduled th notification
             if (pushData.func != 'multiple') {
                 // For single pushes ask for a repeat
-                $cordovaDialogs.confirm('The same again sir? :)', 'CLICKED', ['YAY', 'NAY'])
+                $cordovaDialogs.confirm('The same again sir?', 'Your Highness', ['YAY', 'NAY'])
                 .then(function(buttonIndex) {
                     if (buttonIndex == 1) {
                         if (pushData.func == 'now') Push.now();

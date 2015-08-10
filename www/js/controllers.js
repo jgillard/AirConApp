@@ -55,13 +55,13 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
     };
 
     $scope.cancelAll = function() {
-        $cordovaLocalNotification.cancelAll(function() {
+        cordova.plugins.notification.local.cancelAll(function() {
             $cordovaDialogs.alert('Thank fuck');
         }, this);
     };
 
     $scope.getAll = function() {
-        $cordovaLocalNotification.getAll(function (notifications) {
+        cordova.plugins.notification.local.getAll(function (notifications) {
             console.info('Stragglers:', notifications);
             alert(notifications.length);
         });
@@ -143,7 +143,7 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
     };
 
     $scope.resetPW = function(email) {
-        $cordovaDialogs.alert('message', 'title', 'button name')
+        $cordovaDialogs.alert(email, 'ResetPW', 'ToDo');
         // https://www.parse.com/docs/js/guide#users-resetting-passwords
     };
 
@@ -167,7 +167,7 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
 
 
 
-.controller('SettingsCtrl', function($scope, $ionicDeploy, $cordovaDialogs) {
+.controller('SettingsCtrl', function($scope, $ionicDeploy, $cordovaDialogs, $cordovaInAppBrowser) {
     'use strict';
 
     $scope.testSMS = function() {
@@ -184,6 +184,10 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
                 });
             }
         });
+    };
+
+    $scope.gotoAPK = function() {
+        $cordovaInAppBrowser.open('http://jamesgillard.com/AirConApp.apk', '_system');
     };
 
     $scope.jsconsoleToggle = function(checked) {
@@ -232,12 +236,12 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
 
 
 
-.controller('TabsCtrl', function($scope, $window, User) {
+.controller('TabsCtrl', function($scope, $state, User) {
     'use strict';
 
     $scope.logout = function() {
         User.destroySession();
-        $window.location.href = 'index.html';
+        $state.go('splash');
     };
 
 });

@@ -123,12 +123,6 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
         $cordovaLocalNotification.schedule(pushArray); 
     };
 
-    o.countScheduled = function() {
-        $cordovaLocalNotification.getAllScheduled(function (response) {
-            console.log('countScheduled: ' + response);
-        });
-    }
-
     return o;
 })
 
