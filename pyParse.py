@@ -3,26 +3,28 @@ import json
 from tabulate import tabulate
 import dateutil.parser
 from datetime import datetime, timezone
-from twilio import TwilioRestException
-from twilio.rest import TwilioRestClient
 import time
+import configparser
+import sys
 
-enableSMS = False
-printTable = True
+testSMS = False
+enableSMS = True
+printTable = False
 
-headers = {'X-Parse-Application-Id': 'fhuSblfircn10OfsD4VPtpXQoFAH2lHFgXtu6YdL',
-           'X-Parse-REST-API-Key': '65mZOASP9w3MSLbxeYEOpIkUIx1ihGUgORn7oYsg'}
-twilio_account_sid = "AC63367523f0ebff7935dc582289f5e2f4"
-twilio_auth_token = "24e39fc4d0b114e5784318a2b67127f2"
+warnSent = []
+alarmSent = []
 
+config = configparser.ConfigParser()
+config.read('pyParseConfig.ini')
+headers = {'X-Parse-Application-Id': config['PARSE']['X-Parse-Application-Id'],
+           'X-Parse-REST-API-Key': config['PARSE']['X-Parse-REST-API-Key']}
 
 def getData():
-    # Get the list of Users
     r = requests.get('https://api.parse.com/1/users', headers=headers)
     users = json.loads(r.text)['results']
 
     for user in users:
-        # Select entries in Pushes that match User Pointer, limit to newest 10
+        # Select entries in Pushes that match User Pointer, limit to newest 20
         params = {'where': json.dumps({
             'user': {
                 '__type': 'Pointer',
@@ -30,45 +32,43 @@ def getData():
                 'objectId': user['objectId']
             }}),
             'order': '-createdAt',
-            'limit': 10
+            'limit': 20
             }
         r = requests.get('https://api.parse.com/1/classes/Pushes',
                          params=params, headers=headers)
         entries = json.loads(r.text)['results']
 
-        return (users, entries)
-
-
-def makeTable(users, entries):
-    for user in users:
-        # Set up push data table
-        tableheader = ['pushScheduled', 'pushTriggered', 'pushAcknowledged']
-        tabledata = []
-        for entry in entries:
-            if entry['user']['objectId'] != user['objectId']:
-                continue
-            temp = []
-            for col in tableheader:
-                if col in entry:
-                    date = json.dumps(entry[col]['iso'])[1:-1]
-                    date = dateutil.parser.parse(date)
-                    temp.append(date)
-                else:
-                    temp.append('')
-            temp.append(json.dumps(entry['location']['lat']))
-            temp.append(json.dumps(entry['location']['long']))
-            temp.append(json.dumps(entry['location']['acc']))
-            tabledata.append(temp)
-        tableheader += ['lat', 'long', 'acc']
-
+        # Make table for users one-by-one
         print(user['objectId'] + ' ' + user['username'])
-        printser = analyze(tabledata)
-        if printTable and printUser:
-            printTable(tabledata, tableheader)
+        makeTable(user, entries)
 
 
-def analyze(data):
-    # Get latest pushScheduled and pushTriggered
+def makeTable(user, entries):
+    tableheader = ['pushScheduled', 'pushTriggered', 'pushAcknowledged']
+    tabledata = []
+    for entry in entries:
+        temp = []
+        for col in tableheader:
+            if col in entry:
+                # Grab and format date for each push time column
+                date = json.dumps(entry[col]['iso'])[1:-1]
+                date = dateutil.parser.parse(date)
+                temp.append(date)
+            else:
+                temp.append('')
+        temp.append(json.dumps(entry['location']['lat']))
+        temp.append(json.dumps(entry['location']['long']))
+        temp.append(json.dumps(entry['location']['acc']))
+        tabledata.append(temp)
+    tableheader += ['lat', 'long', 'acc']
+
+    analyze(tabledata, user)
+    if printTable:
+        print(tabulate(tabledata, tableheader, tablefmt='psql'))
+
+
+def analyze(data, user):
+    # Get latest push from each column
     for row in data:
         if row[0] != '':
             latestpushScheduled = row[0]
@@ -85,55 +85,64 @@ def analyze(data):
             print('latestAck: %s' % datetime.strftime(latestpushAcknowledged, "%Y-%m-%d %H:%M:%S"))
             break
 
-    if 'latestpushScheduled' not in locals():
+    if 'latestpushAcknowledged' not in locals():
         print('Not enough data')
-        return False
+        return
 
-    # If latest pushScheduled newer than latest pushTriggered (never triggered)
-    delta =  latestpushScheduled - latestpushTriggered      # Should usually be negative
-    if delta.seconds > 600 and delta.seconds < 36000:
-        print(delta.seconds)
-        print('not sure how this happened :S')
-        sendSMS("+447809146848", "lastSched: &s, lastTrig: &s"
-                % datetime.strftime(latestpushScheduled, "%Y-%m-%d %H:%M:%S"),
-                datetime.strftime(latestpushTriggered, "%Y-%m-%d %H:%M:%S"))
+    global warnSent
+    global alarmSent
+
+    # If latest pushScheduled newer than latest pushTriggered
+    # ie. it never triggered -  shouldn't happen therefore usually negative
+    delta = latestpushScheduled - latestpushTriggered
+    if delta.seconds > 600 and delta.days == 0:
+        print('HUH? SMS sent to the developer')
+        sendSMS("+447809146848", "user: {0}, lastSched: {1}, lastTrig: {2}"
+                .format(user['username'],
+                datetime.strftime(latestpushScheduled, "%Y-%m-%d %H:%M:%S"),
+                datetime.strftime(latestpushTriggered, "%Y-%m-%d %H:%M:%S")))
 
     # If latest pushTriggered newer than latest pushAcknowledged
-    deltaAck = latestpushTriggered - latestpushAcknowledged     # Should usually be negative
-    print(deltaAck.seconds)
-    print(deltaAck.days)
-    # And Triggered age greater than [10 minutes]
+    # ie. not responded to - should usually be negative
+    deltaAck = latestpushTriggered - latestpushAcknowledged
+    # And pushTriggered age greater than 10 minutes
     deltaNow = datetime.now(timezone.utc) - latestpushTriggered
-    print(deltaNow.seconds)
+    print('dSecs: {0}, dAckSecs: {1}, dAckDays: {2}, dNowSecs: {3}'
+        .format(delta.seconds, deltaAck.seconds, deltaAck.days, deltaNow.seconds))
+
+    # Send the warning to the user after 10 minutes
     if deltaAck.seconds > 0 and deltaAck.days == 0 and deltaNow.seconds > 600:
-        print('Sound of tha police!')
-        sendSMS("+447809146848", "lastSched: &s, lastTrig: &s"
-                % datetime.strftime(latestpushTriggered, "%Y-%m-%d %H:%M:%S"),
-                datetime.strftime(latestpushTriggered, "%Y-%m-%d %H:%M:%S"))
-    return True
+        if user['username'] not in warnSent:
+            print('WARNING! SMS sent to', user['username'])
+            warnSent.append(user['username'])
+            sendSMS(user['phonenumber'], "AirConApp: Please press Acknowledge in the next 10 minutes or sirens will start blaring")
 
-
-def printTable(tabledata, tableheader):
-    print(tabulate(tabledata, tableheader, tablefmt='psql'))
+    # Send the alarm to a specified number after 20 minutes
+    if deltaAck.seconds > 0 and deltaAck.days == 0 and deltaNow.seconds > 1200:
+        if user['username'] not in alarmSent:
+            print('ALERT! SMS sent to the boss man')
+            alarmSent.append(user['username'])
+            sendSMS("+447809146848", "user: {0}, lastAck: {1}, lastSched: {2}".format(
+                user['username'],
+                datetime.strftime(latestpushAcknowledged, "%Y-%m-%d %H:%M:%S"),
+                datetime.strftime(latestpushScheduled, "%Y-%m-%d %H:%M:%S")))
 
 
 def sendSMS(to, body):
-    print(to, body)
-    if sendSMS:
-        try:
-            client = TwilioRestClient(twilio_account_sid, twilio_auth_token)
-            message = client.messages.create(to=to,
-                                             from_="+441613751791",
-                                             body=body)
-            print(message.sid)
-        except TwilioRestException as e:
-            print(e)
+    if enableSMS:
+        data = {'message': body, 'to': to}
+        r = requests.post('https://api.parse.com/1/functions/sendSMS', data=data, headers=headers)
+        print (r.status_code)
+        if r.status_code != 200:
+            print(r.text)
 
 
-if enableSMS:
-    sendSMS("+447809146848", "Hello there!")
+if testSMS:
+    sendSMS('07809146848', 'Hello there')
 
 while True:
-    users, entries = getData()      # Get new data
-    makeTable(users, entries)
-    time.sleep(60)                  # Wait 1 minute to repeat
+    try:
+        getData()
+    except:
+        print('Unexpected error:', sys.exc_info()[0])
+    time.sleep(60)
