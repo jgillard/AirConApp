@@ -1,12 +1,4 @@
 /* Generic stylings */
-body {
-  font-family: 'Roboto', Verdana, Geneva, sans-serif;
-}
-
-body .pane {
-  background-color: #fafafa;
-}
-
 .bar.bar-custom {
   border-color: #377d9f;
   background-color: #5c94ae;
@@ -95,6 +87,10 @@ body .pane {
 }
 
 /* Home page stylings */
+.home-page {
+  background-color: #fafafa;
+}
+
 .home-page .button.button-block {
   margin-top: 8px;
   margin-bottom: 8px;
@@ -106,6 +102,10 @@ body .pane {
 }
 
 /* Settings page styling */
+.settings-page {
+  background-color: #fafafa;
+}
+
 .settings-page .list {
   margin-bottom: 0;
 }
