@@ -11,3 +11,5 @@ www/lib/
 .io-config.json
 config.js
 build.json
+AirConApp2/config/global.json
+AirConApp2/public/index.html

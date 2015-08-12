@@ -29,11 +29,14 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
     };
 
     $scope.pushMultiple = function(interval, end) {
+        var delta = new Date() - end;
         if (interval && end) {
-            Push.multiple(interval, end, $scope.isScheduled);
+            if (delta < 0) Push.multiple(interval, end, $scope.isScheduled);
+            else $cordovaDialogs.alert('That end time is in the past!', 'Heads Up');
+        } else {
+           alert('ELSE');
+            $cordovaDialogs.alert('You missed something', 'Heads Up');
         }
-        else $cordovaDialogs.alert('You missed something', 'Heads Up');
-
     };
 
     $scope.isScheduled = function() {

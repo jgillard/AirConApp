@@ -14,16 +14,20 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         Parse.initialize(config.PARSE_APPLICATION_ID, config.PARSE_JAVASCRIPT_KEY);
         Parse.User.enableRevocableSession();
         // $ionicAnalytics.register();
-        Connection.checkConnection();
         $cordovaVibration.vibrate(100);
 
-        $ionicPlatform.on('resume', function(){
-            console.info('resume');
-            Connection.checkConnection();
-            ParseService.getCurrentPosition();
-        });
+        console.info('ready');
+        Connection.checkConnection();
+        ParseService.locationEnabled();
+        ParseService.getCurrentPosition();
     });
 
+    $ionicPlatform.on('resume', function(){
+        console.info('resume');
+        Connection.checkConnection();
+        ParseService.locationEnabled();
+        ParseService.getCurrentPosition();
+    });
 
     $rootScope.$on('$cordovaLocalNotification:schedule', function (event, notification, state) {
         console.log('SCHEDULED', notification, state);

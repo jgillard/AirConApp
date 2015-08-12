@@ -1,6 +1,6 @@
 angular.module('AirConApp.services', ['AirConApp.utils'])
 
-.factory('ParseService', function($q, $cordovaGeolocation) {
+.factory('ParseService', function($q, $cordovaGeolocation, $cordovaDialogs) {
     'use strict';
     var o = {
         latitude: '',
@@ -28,7 +28,7 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
         status.set('location', location);
         status.save(null, {
             success: function(status) {
-                console.log('DATA SAVED TO PARSE: ' + key, status);
+                console.log('DATA SAVED TO PARSE: ' + key);
             },
             error: function(status, error) {
                 console.error(error, status);
@@ -38,8 +38,13 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
 
     o.locationEnabled = function() {
         cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
-            console.log('Location is ' + (enabled ? 'enabled' : 'disabled'));
-            if (!enabled) cordova.plugins.diagnostic.switchToLocationSettings();
+            if (!enabled) {
+                console.log('location disabled');
+                $cordovaDialogs.alert('We need location data on for this app to work', 'Location disabled')
+                .then(function() {
+                    cordova.plugins.diagnostic.switchToLocationSettings();
+                });
+            }
         }, function(error){
             console.log('The following error occurred: '+error);
             alert('Locate error', 'Uh oh :S');
