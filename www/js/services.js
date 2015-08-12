@@ -3,6 +3,7 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
 .factory('ParseService', function($q, $cordovaGeolocation, $cordovaDialogs) {
     'use strict';
     var o = {
+        gotPos: '',
         latitude: '',
         longitude: '',
         accuracy: '',
@@ -58,10 +59,12 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
         var posOptions = {timeout: timeout, maximumAge: 300000, enableHighAccuracy: false};
         $cordovaGeolocation.getCurrentPosition(posOptions)
             .then(function (position) {
+                o.gotPos = true;
                 o.latitude = position.coords.latitude.toFixed(5);
                 o.longitude = position.coords.longitude.toFixed(5);
                 o.accuracy = Math.round(position.coords.accuracy);
                 o.timestamp = position.timestamp;
+                console.log('geoloc updated @services:getCurPos');
                 defer.resolve(position.coords);
             }, function(err) {
                 console.error(err);

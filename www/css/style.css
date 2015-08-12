@@ -1,19 +1,30 @@
 /* Generic stylings */
-.action-button {
-  font-weight: bolder;
-}
-
 body {
   font-family: 'Roboto', Verdana, Geneva, sans-serif;
 }
 
-.row {
-  padding: 0;
+body .pane {
+  background-color: #fafafa;
+}
+
+.bar.bar-custom {
+  border-color: #377d9f;
+  background-color: #5c94ae;
+  color: #fff;
+}
+
+.bar.bar-custom .title {
+    color: #fff;
+}
+
+.tabs-background-custom .tabs, .tabs-background-custom > .tabs {
+  background-color: #5c94ae;
+  border-color: #377d9f;
 }
 
 /* Splash page stylings */
 .splash-page {
-  background: #607D8B;
+  background: #5c94ae;
   font-weight: 500;
   color: white;
 }
@@ -87,4 +98,18 @@ body {
 .home-page .button.button-block {
   margin-top: 8px;
   margin-bottom: 8px;
+}
+
+.home-page #multiple-card {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* Settings page styling */
+.settings-page .list {
+  margin-bottom: 0;
+}
+
+.settings-page #seconds-input {
+  height: 45px;
 }

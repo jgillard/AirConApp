@@ -9,7 +9,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
             cordova.plugins.Keyboard.disableScroll(true);
         }
-        if (window.cordova) StatusBar.backgroundColorByHexString('#455A64');
+        if (window.cordova) StatusBar.backgroundColorByHexString('#3d82a1');
 
         Parse.initialize(config.PARSE_APPLICATION_ID, config.PARSE_JAVASCRIPT_KEY);
         Parse.User.enableRevocableSession();
@@ -19,7 +19,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         console.info('ready');
         Connection.checkConnection();
         ParseService.locationEnabled();
-        ParseService.getCurrentPosition();
+        ParseService.getCurrentPosition(10000);
     });
 
     $ionicPlatform.on('resume', function(){
@@ -77,7 +77,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
             // Branch based on what function scheduled th notification
             if (pushData.func != 'multiple') {
                 // For single pushes ask for a repeat
-                $cordovaDialogs.confirm('The same again sir?', 'Your Highness', ['YAY', 'NAY'])
+                $cordovaDialogs.confirm('The same again?', 'Nice one!', ['YAY', 'NAY'])
                 .then(function(buttonIndex) {
                     if (buttonIndex == 1) {
                         if (pushData.func == 'now') Push.now();

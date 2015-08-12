@@ -9,24 +9,18 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
     $scope.gotLoc = false;
 
     // Defaults for development
-    $scope.localMinutes = 5;
     $scope.end = new Date();
 
     $scope.init = function() {
-        console.log('HomeCtrl scope.init getCurrentPosition');
-        $scope.getCurrentPosition(10000);
+        console.log('getPos from init');
+        ParseService.getCurrentPosition().then(function() {
+            console.log('got pos from init');
+            $scope.gotLoc = true;
+        });
     };
+    $scope.init();
 
     /* PUSH NOTIFICATION STUFF */
-
-    $scope.pushNow = function() {
-        Push.now();
-    };
-
-    $scope.pushSchedule = function(minutes) {
-        if (minutes) Push.schedule(minutes);
-        else $cordovaDialogs.alert('Set the time interval', 'Heads Up');
-    };
 
     $scope.pushMultiple = function(interval, end) {
         var delta = new Date() - end;
@@ -61,37 +55,11 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
 
     $scope.cancelAll = function() {
         cordova.plugins.notification.local.cancelAll(function() {
-            $cordovaDialogs.alert('Thank fuck');
+            $cordovaDialogs.alert('All pushes cancelled');
         }, this);
     };
 
-    $scope.getAll = function() {
-        cordova.plugins.notification.local.getAll(function (notifications) {
-            console.info('Stragglers:', notifications);
-            alert(notifications.length);
-        });
-    };
-
     /* GEOLOCATION STUFF */
-
-    $scope.locate = function() {
-        console.log('Attempting to get location');
-        $scope.showLocating();
-        // First check phone location status
-        ParseService.locationEnabled();
-        $scope.getCurrentPosition();
-    };
-
-    $scope.getCurrentPosition = function(timeout) {
-        ParseService.getCurrentPosition(timeout).then(function(coords) {
-            $scope.hideLocating();
-            if (coords.accuracy > 100) console.log('Location Accuracy Poor');
-            $scope.gotLoc = true;
-        }, function(message) {
-            $scope.hideLocating();
-            $cordovaDialogs.alert('getCurrentPos error:' + message, 'Uh oh :S');
-        });
-    };
 
     $scope.showLocating = function() {
         $ionicLoading.show({
@@ -104,7 +72,6 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
         $ionicLoading.hide();
     };
 
-    $scope.init();
 })
 
 
@@ -163,44 +130,12 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
         // https://www.parse.com/docs/js/guide#users-resetting-passwords
     };
 
-    /* RICK ASTLEY STUFF */
-
-    $ionicModal.fromTemplateUrl('my-modal.html', {
-        scope: $scope,
-        animation: 'slide-in-up'
-    }).then(function(modal) {
-        $scope.modal = modal;
-    });
-    $scope.openModal = function() {
-        $scope.modal.show();
-        setTimeout($scope.closeModal, 30000);
-    };
-    $scope.closeModal = function() {
-        $scope.modal.hide();
-    };
-
 })
 
 
 
-.controller('SettingsCtrl', function($scope, $ionicDeploy, $cordovaDialogs, $cordovaInAppBrowser) {
+.controller('SettingsCtrl', function($scope, $ionicDeploy, $cordovaDialogs, $cordovaInAppBrowser, Push) {
     'use strict';
-
-    $scope.testSMS = function() {
-        var to = '+447809146848';
-        $cordovaDialogs.confirm('This cost be money. DBAD.', 'SMS Test', ['Test', 'Cancel'])
-        .then(function(buttonIndex) {
-            if (buttonIndex == 1) {
-                // Send SMS via Parse Cloud Code
-                Parse.Cloud.run('sendSMS', { to: to }, {
-                    success: function() {
-                    },
-                    error: function() {
-                    }
-                });
-            }
-        });
-    };
 
     $scope.gotoAPK = function() {
         $cordovaInAppBrowser.open('http://jamesgillard.com/AirConApp.apk', '_system');
@@ -214,10 +149,37 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
         if (checked === true) head.appendChild(script);
     };
 
-    // IONIC.IO DEPLOY CODE
-    // Update app code with new release from Ionic Deploy
+    $scope.pushNow = function() {
+        Push.now();
+    };
+
+    $scope.getAll = function() {
+        cordova.plugins.notification.local.getAll(function (notifications) {
+            console.info('Stragglers:', notifications);
+            alert(notifications.length);
+        });
+    };
+
+    $scope.pushSchedule = function(minutes) {
+        if (minutes) Push.schedule(minutes);
+        else $cordovaDialogs.alert('Set the time interval', 'Heads Up');
+    };
+
+    /* IONIC DEPLOY */
 
     $scope.hasUpdate = null;
+
+    $scope.checkForUpdates = function() {
+        console.log('Ionic Deploy: Checking for updates');
+        $ionicDeploy.check().then(function(hasUpdate) {
+            console.log('Ionic Deploy: Update available: ' + hasUpdate);
+            $scope.hasUpdate = hasUpdate;
+            $cordovaDialogs.alert('No update available', 'Nada');
+        }, function(err) {
+            console.error('Ionic Deploy: Unable to check for updates', err);
+            $cordovaDialogs.alert('Error occurred', 'Heads Up');
+        });
+    };
 
     $scope.doUpdate = function() {
         if ($scope.hasUpdate === null) $cordovaDialogs.alert('Other button first', 'Woah there!');
@@ -233,19 +195,6 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
                 console.log('Ionic Deploy: Progress... ', prog);
             });
         }
-    };
-
-    // Check Ionic Deploy for new code
-    $scope.checkForUpdates = function() {
-        console.log('Ionic Deploy: Checking for updates');
-        $ionicDeploy.check().then(function(hasUpdate) {
-            console.log('Ionic Deploy: Update available: ' + hasUpdate);
-            $scope.hasUpdate = hasUpdate;
-            $cordovaDialogs.alert('No update available', 'Heads Up');
-        }, function(err) {
-            console.error('Ionic Deploy: Unable to check for updates', err);
-            $cordovaDialogs.alert('Error occurred', 'Heads Up');
-        });
     };
 
 })
