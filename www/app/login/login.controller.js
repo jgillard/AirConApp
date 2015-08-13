@@ -1,6 +1,6 @@
 angular.module('app.login', [])
 
-.controller('LoginCtrl', function($scope, $state, $cordovaDialogs, UserService) {
+.controller('LoginCtrl', function($scope, $state, $cordovaDialogs, UserService, DebugService) {
     'use strict';
 
     // Defaults for development
@@ -61,9 +61,21 @@ angular.module('app.login', [])
         });
     };
 
-    $scope.resetPW = function(email) {
-        $cordovaDialogs.alert(email, 'ResetPW', 'ToDo');
-        // https://www.parse.com/docs/js/guide#users-resetting-passwords
+    $scope.resetPW = function() {
+        $cordovaDialogs.prompt('Please enter your email address', 'Password Reset', ['Go', 'Cancel'])
+        .then(function(result) {
+            if (result.buttonIndex == 1) {
+                var email = result.input1;
+                Parse.User.requestPasswordReset(email, {
+                    success: function() {
+                        $cordovaDialogs.alert('You\'ll recieve an email shortly');
+                    }, error: function(error) {
+                        console.log('ResetPW error: ' + error.code + ' ' + error.message);
+                        DebugService.emailDev(error, 'login.controller:resetPW:Parse.User.requestPasswordReset');
+                    }
+                });
+            }
+        });
     };
 
 });
