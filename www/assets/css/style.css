@@ -14,14 +14,14 @@
   border-color: #377d9f;
 }
 
-/* Splash page stylings */
-.splash-page {
+/* login page stylings */
+.login-page {
   background: #5c94ae;
   font-weight: 500;
   color: white;
 }
 
-.splash-page .logo h1 {
+.login-page .logo h1 {
   margin-top: 30px;
   text-align: center;
   font-weight: 300;
@@ -30,31 +30,31 @@
   font-size: 42px;
 }
 
-.splash-page .card {
+.login-page .card {
   margin-top: 15px;
 }
 
 
-.splash-page .item-input {
+.login-page .item-input {
   min-height: 70px;
 }
 
-.splash-page input[type="text"] {
+.login-page input[type="text"] {
   padding-left: 10px;
 }
 
-.splash-page .button {
+.login-page .button {
   color: white;
   margin: 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.splash-page .button-sign-in {
+.login-page .button-sign-in {
   background-color: #65caff;
   border-color: #55a5ce;
 }
 
-.splash-page .button-sign-up {
+.login-page .button-sign-up {
   background-color: #81C784;
   border-color: #669f69;
 }
@@ -71,7 +71,7 @@
   box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-.splash-page .splash-text {
+.login-page .login-text {
   font-size: 14px;
   opacity: 0.7;
   padding: 0px;
@@ -80,7 +80,7 @@
   cursor: pointer;
 }
 
-.splash-page #splash-version {
+.login-page #login-version {
   position: fixed;
   width: 100%;
   bottom: 20px;

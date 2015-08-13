@@ -2,7 +2,9 @@ hooks/
 platforms/
 plugins/
 resources/
-www/lib/
+www/assets/img/
+www/assets/lib/
+www/assets/sound/
 __pycache__
 
 *.sublime-workspace

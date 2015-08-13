@@ -1,8 +1,12 @@
-angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy', 'ngCordova', 'AirConApp.controllers', 'AirConApp.services'])
+angular.module('app.core', []);
+
+angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy', 'ngCordova',
+    'app.core', 'app.login', 'app.tabs', 'app.home', 'app.settings'])
 
 .run(function($ionicPlatform, $state, $rootScope, $cordovaDialogs, $cordovaVibration,
-        $cordovaLocalNotification, $cordovaStatusbar, User, Push, ParseService, Connection) {
+        $cordovaLocalNotification, $cordovaStatusbar, UserService, PushService, LocationService, ParseService, ConnectionService) {
     'use strict';
+
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard for form inputs)
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
@@ -17,16 +21,16 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         $cordovaVibration.vibrate(100);
 
         console.info('ready');
-        Connection.checkConnection();
-        ParseService.locationEnabled();
-        ParseService.getCurrentPosition(10000);
+        ConnectionService.checkConnection();
+        LocationService.locationEnabled();
+        LocationService.getCurrentPosition(10000);
     });
 
     $ionicPlatform.on('resume', function(){
         console.info('resume');
-        Connection.checkConnection();
-        ParseService.locationEnabled();
-        ParseService.getCurrentPosition();
+        ConnectionService.checkConnection();
+        LocationService.locationEnabled();
+        LocationService.getCurrentPosition();
     });
 
     $rootScope.$on('$cordovaLocalNotification:schedule', function (event, notification, state) {
@@ -75,8 +79,8 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
             $cordovaDialogs.confirm('The same again?', 'Nice one!', ['YAY', 'NAY'])
             .then(function(buttonIndex) {
                 if (buttonIndex == 1) {
-                    if (pushData.func == 'now') Push.now();
-                    else if (pushData.func == 'schedule') Push.schedule(pushData.minutes);
+                    if (pushData.func == 'now') PushService.now();
+                    else if (pushData.func == 'schedule') PushService.schedule(pushData.minutes);
                     else alert('Dev screwed up...');
                 }
             });
@@ -100,16 +104,16 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
     .state('tab', {
         url: '/tab',
         abstract: true,
-        templateUrl: 'templates/tabs.html',
+        templateUrl: 'app/core/tabs.html',
         controller: 'TabsCtrl',
         // resolve: {
-        //     populateSession: function(User) {
-        //         return User.checkSession();
+        //     populateSession: function(UserService) {
+        //         return UserService.checkSession();
         //     }
         // },
-        onEnter: function($state, User) {
-            User.checkSession().then(function(hasSession) {
-                if (!hasSession) $state.go('splash');
+        onEnter: function($state, UserService) {
+            UserService.checkSession().then(function(hasSession) {
+                if (!hasSession) $state.go('login');
             });
         }
     })
@@ -118,7 +122,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         url: '/home',
         views: {
             'tab-home': {
-                templateUrl: 'templates/home.html',
+                templateUrl: 'app/home/home.html',
                 controller: 'HomeCtrl'
             }
         }
@@ -128,18 +132,18 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         url: '/settings',
         views: {
             'tab-settings': {
-                templateUrl: 'templates/settings.html',
+                templateUrl: 'app/settings/settings.html',
                 controller: 'SettingsCtrl'
             }
         }
     })
 
-    .state('splash', {
+    .state('login', {
         url: '/',
-        templateUrl: 'templates/splash.html',
-        controller: 'SplashCtrl'
-        // onEnter: function($state, User) {
-        //     User.checkSession().then(function(hasSession) {
+        templateUrl: 'app/login/login.html',
+        controller: 'LoginCtrl'
+        // onEnter: function($state, UserService) {
+        //     UserService.checkSession().then(function(hasSession) {
         //         if (hasSession) $state.go('tab.home');
         //     })
         // }

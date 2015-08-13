@@ -6,25 +6,35 @@
     <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval'">
     <title>AirConApp</title>
 
-    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="assets/lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
 
     <script src="config.js"></script>
 
-    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="assets/lib/ionic/js/ionic.bundle.js"></script>
     <!-- Cordova is bootstrapped by ionic-service-core, uncomment this if you remove ionic-service-core... -->
     <!-- <script src="cordova.js"></script> -->
-    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
-    <script src="lib/ionic-service-core/ionic-core.js"></script>
-    <!-- <script src="lib/ionic-service-analytics/ionic-analytics.js"></script> -->
-    <script src="lib/ionic-service-push/ionic-push.js"></script>
-    <script src="lib/ionic-service-deploy/ionic-deploy.js"></script>
-    <script src="lib/parse-1.5.0.min.js"></script>
+    <script src="assets/lib/ngCordova/dist/ng-cordova.js"></script>
+    <script src="assets/lib/ionic-service-core/ionic-core.js"></script>
+    <!-- <script src="assets/lib/ionic-service-analytics/ionic-analytics.js"></script> -->
+    <script src="assets/lib/ionic-service-push/ionic-push.js"></script>
+    <script src="assets/lib/ionic-service-deploy/ionic-deploy.js"></script>
+    <script src="assets/lib/parse-1.5.0.min.js"></script>
 
-    <script src="js/app.js"></script>
-    <script src="js/controllers.js"></script>
-    <script src="js/services.js"></script>
-    <script src="js/utils.js"></script>
+    <script src="app/app.js"></script>
+
+    <script src="app/login/login.controller.js"></script>
+    <script src="app/core/tabs.controller.js"></script>
+    <script src="app/home/home.controller.js"></script>
+    <script src="app/settings/settings.controller.js"></script>
+
+    <script src="app/core/push.service.js"></script>
+    <script src="app/core/parse.service.js"></script>
+    <script src="app/core/connection.service.js"></script>
+    <script src="app/core/location.service.js"></script>
+    <script src="app/core/user.service.js"></script>
+    <script src="app/core/localstorage.service.js"></script>
+
   </head>
 
   <body ng-app="AirConApp">
