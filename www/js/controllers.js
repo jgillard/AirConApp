@@ -98,12 +98,14 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
         if (window.plugins) {
             window.plugins.phonenumber.get(function(phoneNum) {
                 console.log('phoneNum: ' + phoneNum);
+                if (!$scope.validatePhoneNum(phoneNum)) return;
                 $scope.callAuth(username, password, email, phoneNum, signingUp);
             }, function(error) {
                 console.log(error);
                 if (signingUp) {
                     $cordovaDialogs.prompt('Please enter this phone\'s number', error, ['Submit'])
                     .then(function(result) {
+                       if (!$scope.validatePhoneNum(result.input1)) return;
                         $scope.callAuth(username, password, email, result.input1, signingUp);
                     });
                 } else {
@@ -115,6 +117,13 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
         }
 
     };
+
+    $scope.validatePhoneNum = function(number) {
+        if (number.substring(0,2) !== "07" || number.length !== 11) {
+            alert('Invalid mobile number');
+            return false;
+        } else return true;
+    }
 
     $scope.callAuth = function(username, password, email, phoneNum, signingUp) {
         User.auth(username, password, email, phoneNum, signingUp).then(function() {
