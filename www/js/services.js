@@ -2,13 +2,7 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
 
 .factory('ParseService', function($q, $cordovaGeolocation, $cordovaDialogs) {
     'use strict';
-    var o = {
-        gotPos: '',
-        latitude: '',
-        longitude: '',
-        accuracy: '',
-        timestamp: ''
-    };
+    var o = {};
 
     o.savePush = function(key, value) {
         var user = Parse.User.current();
@@ -16,24 +10,17 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
         var status = new Status();
         status.set(key, value);
         status.set('user', user);
-        if (Date.now() - o.timestamp > 300000) {
-            var location = 'should really deal with this';
-            alert('old location data');
-        } else {
-            var location = {lat: o.latitude, long: o.longitude, acc: o.accuracy};
-            if (location.latitude === '') {
-                console.error('services:savePush location data empty');
-                alert('services:savePush location data empty');
-            }
-        }
-        status.set('location', location);
-        status.save(null, {
-            success: function(status) {
-                console.log('DATA SAVED TO PARSE: ' + key);
-            },
-            error: function(status, error) {
-                console.error(error, status);
-            }
+        o.getCurrentPosition().then(function(posData) {
+            var location = {lat: posData.latitude, long: posData.longitude, acc: posData.accuracy};
+            status.set('location', location);
+            status.save(null, {
+                success: function(status) {
+                    console.log('DATA SAVED TO PARSE: ' + key);
+                },
+                error: function(status, error) {
+                    console.error(error, status);
+                }
+            });
         });
     };
 
@@ -47,8 +34,7 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
                 });
             }
         }, function(error){
-            console.log('The following error occurred: '+error);
-            alert('Locate error', 'Uh oh :S');
+            console.log('services.locationEnabled: ' + error);
         });
     };
 
@@ -59,15 +45,14 @@ angular.module('AirConApp.services', ['AirConApp.utils'])
         var posOptions = {timeout: timeout, maximumAge: 300000, enableHighAccuracy: false};
         $cordovaGeolocation.getCurrentPosition(posOptions)
             .then(function (position) {
-                o.gotPos = true;
-                o.latitude = position.coords.latitude.toFixed(5);
-                o.longitude = position.coords.longitude.toFixed(5);
-                o.accuracy = Math.round(position.coords.accuracy);
-                o.timestamp = position.timestamp;
-                console.log('geoloc updated @services:getCurPos');
-                defer.resolve(position.coords);
+                var posData = {};
+                posData.latitude = position.coords.latitude.toFixed(5);
+                posData.longitude = position.coords.longitude.toFixed(5);
+                posData.accuracy = Math.round(position.coords.accuracy);
+                console.log('geoloc updated @services.getCurPos');
+                defer.resolve(posData);
             }, function(err) {
-                console.error(err);
+                console.error('services.getCurPos: ' + err);
                 defer.reject('Could not get your location');
             })
         ;

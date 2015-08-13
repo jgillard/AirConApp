@@ -12,10 +12,11 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
     $scope.end = new Date();
 
     $scope.init = function() {
-        console.log('getPos from init');
+        console.log('getPos from Home init()');
         ParseService.getCurrentPosition().then(function() {
-            console.log('got pos from init');
             $scope.gotLoc = true;
+        }, function() {
+            $scope.gotLoc = false;
         });
     };
     $scope.init();
@@ -119,11 +120,11 @@ angular.module('AirConApp.controllers', ['ionic', 'ionic.service.deploy', 'AirCo
     };
 
     $scope.validatePhoneNum = function(number) {
-        if (number.substring(0,2) !== "07" || number.length !== 11) {
-            alert('Invalid mobile number');
+        if (number.substring(0,2) !== '07' || number.length !== 11) {
+            $cordovaDialogs.alert('Invalid mobile number', 'Oops');
             return false;
         } else return true;
-    }
+    };
 
     $scope.callAuth = function(username, password, email, phoneNum, signingUp) {
         User.auth(username, password, email, phoneNum, signingUp).then(function() {

@@ -33,9 +33,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         console.log('SCHEDULED', notification, state);
         var scheduledTime = new Date(notification.at * 1000);
         var deltat = Math.round((scheduledTime - Date.now()) / 1000);
-        ParseService.getCurrentPosition().then(function() {
-            ParseService.savePush('pushScheduled', scheduledTime);
-        });
+        ParseService.savePush('pushScheduled', scheduledTime);
         $cordovaLocalNotification.getAllScheduled(function (response) {
             if (deltat > 0 && response.length == 1) {
                 $cordovaDialogs.alert('Next push in ' + deltat + ' seconds', 'Success');
@@ -46,9 +44,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
     $rootScope.$on('$cordovaLocalNotification:trigger', function (event, notification, state) {
         console.log('TRIGGERED',notification, state);
         var triggeredTime = new Date();
-        ParseService.getCurrentPosition().then(function() {
-            ParseService.savePush('pushTriggered', triggeredTime);
-        });
+        ParseService.savePush('pushTriggered', triggeredTime);
         if (state == 'foreground') {
             $cordovaDialogs.confirm('Acknowledge me :)', 'Push', ['Ack', 'Cancel'])
             .then(function(buttonIndex) {
@@ -68,32 +64,30 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
     });
 
     $rootScope.acknowledge = function(notification) {
-        ParseService.getCurrentPosition().then(function() {
-            var acknowledgedTime = new Date();
-            ParseService.savePush('pushAcknowledged', acknowledgedTime);
-            $cordovaLocalNotification.clearAll();
-            var pushData = eval('(' + notification.data + ')');
-            console.log('pushData:', pushData);
-            // Branch based on what function scheduled th notification
-            if (pushData.func != 'multiple') {
-                // For single pushes ask for a repeat
-                $cordovaDialogs.confirm('The same again?', 'Nice one!', ['YAY', 'NAY'])
-                .then(function(buttonIndex) {
-                    if (buttonIndex == 1) {
-                        if (pushData.func == 'now') Push.now();
-                        else if (pushData.func == 'schedule') Push.schedule(pushData.minutes);
-                        else alert('Dev screwed up...');
-                    }
-                });
-            } else {
-                // For queued pushes, wait until none left
-                cordova.plugins.notification.local.getAllScheduled(function (response) {
-                    if (response === 'undefined' || response.length === 0) {
-                         $cordovaDialogs.confirm('Schedule more if necessary', 'That was the last one');
-                    }
-                });
-            }
-        });
+        var acknowledgedTime = new Date();
+        ParseService.savePush('pushAcknowledged', acknowledgedTime);
+        $cordovaLocalNotification.clearAll();
+        var pushData = eval('(' + notification.data + ')');
+        console.log('pushData:', pushData);
+        // Branch based on what function scheduled th notification
+        if (pushData.func != 'multiple') {
+            // For single pushes ask for a repeat
+            $cordovaDialogs.confirm('The same again?', 'Nice one!', ['YAY', 'NAY'])
+            .then(function(buttonIndex) {
+                if (buttonIndex == 1) {
+                    if (pushData.func == 'now') Push.now();
+                    else if (pushData.func == 'schedule') Push.schedule(pushData.minutes);
+                    else alert('Dev screwed up...');
+                }
+            });
+        } else {
+            // For queued pushes, wait until none left
+            cordova.plugins.notification.local.getAllScheduled(function (response) {
+                if (response === 'undefined' || response.length === 0) {
+                     $cordovaDialogs.confirm('Schedule more if necessary', 'That was the last one');
+                }
+            });
+        }
     };
 
 })
