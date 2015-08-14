@@ -2,18 +2,14 @@ hooks/
 platforms/
 plugins/
 resources/
-www/assets/img/
+scss/
 www/assets/lib/
-www/assets/sound/
-__pycache__
 
-*.sublime-workspace
 *.sublime-project
+*.sublime-workspace
 *.keystore
 
 .io-config.json
-config.js
 build.json
-AirConApp2/config/global.json
-AirConApp2/public/index.html
-pyParseConfig.ini
+ionic.project
+gulpfile.js
