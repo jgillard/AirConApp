@@ -13,37 +13,17 @@
     </div>
 
     <!-- MULTPLE PUSH SCHEDULE ROW -->
-    <div class="card" id="multiple-card">
-      <form ng-submit="pushMultiple(interval, end)" class="login-form">
-        <div class="row">
-          <div class="col col-33">
-            <div class="card">
-              <div class="list">
-                <label class="item item-input">
-                  <input type="number" ng-model="interval" placeholder="xxx">
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="col col-67">
-            <div class="card">
-              <div class="list">
-                <label class="item item-input">
-                  <input type="time" ng-model="end" placeholder="End">
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <button class="button button-block button-dark" type="submit">
-              Multiple
-            </button>
-          </div>
-        </div>
+
+    <div class="card">
+      <div class="list list-inset card">
+        <label class="item item-input">
+          <input type="number" placeholder="Interval" ng-model="multiple.interval">
+        </label>
       </div>
-    </form>
+      <div class="padding">
+        <button class="button button-block button-royal" ng-click="showPicker()">Multiple</button>
+      </div>
+    </div>
 
     <!-- QUERY AND CANCEL ROW -->
 

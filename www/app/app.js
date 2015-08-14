@@ -88,7 +88,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
             // For queued pushes, wait until none left
             cordova.plugins.notification.local.getAllScheduled(function (response) {
                 if (response === 'undefined' || response.length === 0) {
-                     $cordovaDialogs.confirm('Schedule more if necessary', 'That was the last one');
+                     $cordovaDialogs.alert('Schedule more if necessary', 'That was the last one');
                 }
             });
         }

@@ -21,19 +21,35 @@ angular.module('app.home', [])
 
     /* PUSH NOTIFICATION STUFF */
 
-    $scope.pushMultiple = function(interval, end) {
+    $scope.multiple = {};
+
+    $scope.showPicker = function() {
+        var options = {
+            date: new Date(),
+            mode: 'time',
+            androidTheme: 4
+        };
+        datePicker.show(options,
+            function(time) {
+                $scope.pushMultiple(time);
+            }, function(error) {
+                console.log(error);
+            }
+        );
+    };
+
+    $scope.pushMultiple = function(end) {
+        var interval = $scope.multiple.interval;
         var delta = new Date() - end;
         if (interval && end) {
             if (delta < 0) PushService.multiple(interval, end, $scope.isScheduled);
             else $cordovaDialogs.alert('That end time is in the past!', 'Heads Up');
         } else {
-           alert('ELSE');
             $cordovaDialogs.alert('You missed something', 'Heads Up');
         }
     };
 
     $scope.isScheduled = function() {
-        // Only deals with single scheduled push (deal with multiple and zero)
         cordova.plugins.notification.local.getScheduled(function (response) {
             if (!response[0]) {
                 $cordovaDialogs.alert('No pushes scheduled', 'Nope!');
