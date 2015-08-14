@@ -22,6 +22,7 @@ angular.module('app.login', [])
 
         if (window.plugins) {
             window.plugins.phonenumber.get(function(phoneNum) {
+                console.log('phoneNum: ' + phoneNum);
                 if (!$scope.validatePhoneNum(phoneNum)) return;
                 $scope.callAuth(username, password, email, phoneNum, signingUp);
             }, function(error) {
