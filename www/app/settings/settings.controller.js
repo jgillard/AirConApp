@@ -1,6 +1,6 @@
 angular.module('app.settings', [])
 
-.controller('SettingsCtrl', function($scope, $ionicDeploy, $cordovaDialogs, $cordovaInAppBrowser, PushService, DebugService) {
+.controller('SettingsCtrl', function($scope, $ionicDeploy, $cordovaDialogs, $cordovaInAppBrowser, PushService) {
     'use strict';
 
     $scope.gotoAPK = function() {
@@ -43,7 +43,6 @@ angular.module('app.settings', [])
             $cordovaDialogs.alert('No update available', 'Nada');
         }, function(err) {
             console.error('Ionic Deploy: Unable to check for updates', err);
-            DebugService.emailDev(err, 'settings.controller:checkforUpdate:ionicDeploy.check');
             $cordovaDialogs.alert('Error occurred', 'Heads Up');
         });
     };
@@ -57,7 +56,6 @@ angular.module('app.settings', [])
                 $cordovaDialogs.alert('Update installed', 'Heads Up');
             }, function(err) {
                 console.log('Ionic Deploy: Update error! ', err);
-                DebugService.emailDev(err, 'settings.controller:doUpdate:ionicDeploy.update');
                 $cordovaDialogs.alert('Error occurred', 'Heads Up');
             }, function(prog) {
                 console.log('Ionic Deploy: Progress... ', prog);

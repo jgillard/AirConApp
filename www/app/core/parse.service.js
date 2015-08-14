@@ -1,6 +1,6 @@
 angular.module('app.core')
 
-.factory('ParseService', function(LocationService, DebugService) {
+.factory('ParseService', function(LocationService) {
     'use strict';
 
     var o = {};
@@ -20,7 +20,6 @@ angular.module('app.core')
                 },
                 error: function(status, error) {
                     console.error(error, status);
-                    DebugService.emailDev(JSON.stringify(status) + JSON.stringify(error), 'parse.service:savePush:LocServ.getCurPos');
                 }
             });
         });

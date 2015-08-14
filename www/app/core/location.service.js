@@ -1,6 +1,6 @@
 angular.module('app.core')
 
-.factory('LocationService', function($q, $cordovaGeolocation, $cordovaDialogs, DebugService) {
+.factory('LocationService', function($q, $cordovaGeolocation, $cordovaDialogs) {
     'use strict';
 
     var o = {};
@@ -16,7 +16,6 @@ angular.module('app.core')
             }
         }, function(error){
             console.log('services.locationEnabled: ' + error);
-            DebugService.emailDev(error, 'login.service:locationEnabled:cdv.plgs.diag.isLocEn');
         });
     };
 
@@ -35,7 +34,6 @@ angular.module('app.core')
                 defer.resolve(posData);
             }, function(err) {
                 console.error('services.getCurPos: ' + err);
-                DebugService.emailDev(err, 'login.service:getCurPos:cdvGeo.getCurPos');
                 defer.reject('Could not get your location');
             })
         ;
