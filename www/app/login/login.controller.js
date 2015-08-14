@@ -15,15 +15,14 @@ angular.module('app.login', [])
         } else if (!email && signingUp) {
             $cordovaDialogs.alert('Please enter an email address', 'Email'); return;
         }
-        console.log(username, password, email, signingUp);
 
         // Logout existing user session
         if (Parse.User.current()) Parse.destroySession;
 
-        if (window.plugins) {
-            window.plugins.phonenumber.get(function(phoneNum) {
-                if (!$scope.validatePhoneNum(phoneNum)) return;
-                $scope.callAuth(username, password, email, phoneNum, signingUp);
+        if (window.cordova) {
+            window.plugins.sim.getSimInfo(function(simInfo) {
+                if (!$scope.validatePhoneNum(simInfo.phoneNumber)) return;
+                $scope.callAuth(username, password, email, simInfo.phoneNumber, signingUp);
             }, function(error) {
                 console.log(error);
                 if (signingUp) {

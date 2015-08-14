@@ -54,7 +54,7 @@ angular.module('app.home', [])
 
     $scope.cancelAll = function() {
         cordova.plugins.notification.local.cancelAll(function() {
-            $cordovaDialogs.alert('All pushes cancelled');
+            $cordovaDialogs.alert('All pushes cancelled', 'Done');
         }, this);
     };
 

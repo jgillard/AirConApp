@@ -4,7 +4,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
     'app.core', 'app.login', 'app.tabs', 'app.home', 'app.settings'])
 
 .run(function($ionicPlatform, $state, $rootScope, $cordovaDialogs, $cordovaVibration,
-        $cordovaLocalNotification, $cordovaStatusbar, UserService, PushService, LocationService, ParseService, ConnectionService) {
+        $cordovaLocalNotification, PushService, LocationService, ParseService, ConnectionService) {
     'use strict';
 
     $ionicPlatform.ready(function() {
@@ -15,7 +15,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         }
         if (window.cordova) StatusBar.backgroundColorByHexString('#3d82a1');
 
-        Parse.initialize(config.PARSE_APPLICATION_ID, config.PARSE_JAVASCRIPT_KEY);
+        Parse.initialize('fhuSblfircn10OfsD4VPtpXQoFAH2lHFgXtu6YdL', 'cpyzcS6oynBqqBiHr3eEBGfA02AceKVJnaZAcKi5');
         Parse.User.enableRevocableSession();
         // $ionicAnalytics.register();
         $cordovaVibration.vibrate(100);
@@ -94,61 +94,4 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         }
     };
 
-})
-
-.config(function($stateProvider, $urlRouterProvider) {
-    'use strict';
-    $stateProvider
-
-    // setup an abstract state for the tabs directive
-    .state('tab', {
-        url: '/tab',
-        abstract: true,
-        templateUrl: 'app/core/tabs.html',
-        controller: 'TabsCtrl',
-        // resolve: {
-        //     populateSession: function(UserService) {
-        //         return UserService.checkSession();
-        //     }
-        // },
-        onEnter: function($state, UserService) {
-            UserService.checkSession().then(function(hasSession) {
-                if (!hasSession) $state.go('login');
-            });
-        }
-    })
-
-    .state('tab.home', {
-        url: '/home',
-        views: {
-            'tab-home': {
-                templateUrl: 'app/home/home.html',
-                controller: 'HomeCtrl'
-            }
-        }
-    })
-
-    .state('tab.settings', {
-        url: '/settings',
-        views: {
-            'tab-settings': {
-                templateUrl: 'app/settings/settings.html',
-                controller: 'SettingsCtrl'
-            }
-        }
-    })
-
-    .state('login', {
-        url: '/',
-        templateUrl: 'app/login/login.html',
-        controller: 'LoginCtrl'
-        // onEnter: function($state, UserService) {
-        //     UserService.checkSession().then(function(hasSession) {
-        //         if (hasSession) $state.go('tab.home');
-        //     })
-        // }
-    });
-
-    // if none of the above states are matched, use this as the fallback
-    $urlRouterProvider.otherwise('/');
 });

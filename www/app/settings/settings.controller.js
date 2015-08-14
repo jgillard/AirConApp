@@ -9,11 +9,13 @@ angular.module('app.settings', [])
     };
 
     $scope.jsconsoleToggle = function(checked) {
-        var head = document.getElementsByTagName('head')[0];
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = 'http://jsconsole.com/remote.js?AirConApp';
-        if (checked === true) head.appendChild(script);
+        alert('CURRENTLY DISABLED');
+        return;
+        // var head = document.getElementsByTagName('head')[0];
+        // var script = document.createElement('script');
+        // script.type = 'text/javascript';
+        // script.src = 'http://jsconsole.com/remote.js?AirConApp';
+        // if (checked === true) head.appendChild(script);
     };
 
     $scope.pushNow = function() {

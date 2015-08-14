@@ -39,7 +39,7 @@
   min-height: 70px;
 }
 
-.login-page input[type="text"] {
+.login-page input[type="text"], input[type="email"] {
   padding-left: 10px;
 }
 
