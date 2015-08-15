@@ -9,7 +9,7 @@ angular.module('app.core')
         if(window.Connection) {
             console.log('window.Connection');
             if(navigator.connection.type == Connection.NONE) {
-                $cordovaDialogs.alert('Nay internet laddie.', 'Internet Disconnected')
+                $cordovaDialogs.alert('No internet connection.', 'Warning')
                 .then(function(result) {
                     if(!result) {
                         ionic.Platform.exitApp();

@@ -9,11 +9,11 @@ angular.module('app.login', [])
 
     $scope.submitForm = function(username, password, email, signingUp) {
         if (!username) {
-            $cordovaDialogs.alert('Please enter a username', 'Username'); return;
+            $cordovaDialogs.alert('Please enter a username'); return;
         } else if (!password) {
-            $cordovaDialogs.alert('Please enter a password', 'Username'); return;
+            $cordovaDialogs.alert('Please enter a password'); return;
         } else if (!email && signingUp) {
-            $cordovaDialogs.alert('Please enter an email address', 'Email'); return;
+            $cordovaDialogs.alert('Please enter an email address'); return;
         }
 
         // Logout existing user session
@@ -45,7 +45,7 @@ angular.module('app.login', [])
             (number.substring(0,4) === '+447' && number.length === 13)) {
             return true;
         } else {
-            $cordovaDialogs.alert('Invalid mobile number', 'Oops');
+            $cordovaDialogs.alert('Invalid mobile number');
             return false;
         }
     };

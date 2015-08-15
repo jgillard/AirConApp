@@ -38,7 +38,7 @@ angular.module('app.core')
                         }
                         if (number !== savedNumber) {
                             console.log('savedNum:', savedNumber, 'newNum:', number);
-                            $cordovaDialogs.alert('This phone\'s number is different to the one on your account\n\nThis will be updated now', 'Heads Up')
+                            $cordovaDialogs.alert('This phone\'s number is different to the one on your account\n\nThis will be updated now')
                             .then(function(buttonIndex) {
                                 if (buttonIndex === 1) {
                                     user.set('phonenumber', number);

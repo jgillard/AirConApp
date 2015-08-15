@@ -9,7 +9,7 @@ angular.module('app.core')
         var message = JSON.stringify(error);
         $cordovaDialogs.alert('Something\'s gone wrong, please send this email')
         .then(function() {
-            window.open('mailto:jamesgillard@live.co.uk?subject=AirConApp+Error&body=' + location + message);
+            var ref = cordova.InAppBrowser.open('mailto:jamesgillard@live.co.uk?subject=AirConApp+Error&body=' + location + message, '_system');
         });
     };
 

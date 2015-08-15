@@ -43,16 +43,16 @@ angular.module('app.home', [])
         var delta = new Date() - end;
         if (interval && end) {
             if (delta < 0) PushService.multiple(interval, end, $scope.isScheduled);
-            else $cordovaDialogs.alert('That end time is in the past!', 'Heads Up');
+            else $cordovaDialogs.alert('That end time is in the past!');
         } else {
-            $cordovaDialogs.alert('You missed something', 'Heads Up');
+            $cordovaDialogs.alert('You missed something');
         }
     };
 
     $scope.isScheduled = function() {
         cordova.plugins.notification.local.getScheduled(function (response) {
             if (!response[0]) {
-                $cordovaDialogs.alert('No pushes scheduled', 'Nope!');
+                $cordovaDialogs.alert('No pushes scheduled');
                 return;
             }
             console.log(response);
@@ -63,14 +63,14 @@ angular.module('app.home', [])
             }
             var deltat = Math.round(nextPush - Date.now()/1000);
             console.log(numPush + ' push(es) scheduled in ' + deltat + ' seconds');
-            if (numPush > 1) $cordovaDialogs.alert(numPush + ' pushes scheduled\nFirst in ' + deltat + ' seconds', 'News Alert');
-            else $cordovaDialogs.alert(numPush + ' push scheduled for ' + deltat + ' seconds time!', 'News Alert');
+            if (numPush > 1) $cordovaDialogs.alert(numPush + ' pushes scheduled\nFirst in ' + deltat + ' seconds');
+            else $cordovaDialogs.alert(numPush + ' push scheduled for ' + deltat + ' seconds time!');
         });
     };
 
     $scope.cancelAll = function() {
         cordova.plugins.notification.local.cancelAll(function() {
-            $cordovaDialogs.alert('All pushes cancelled', 'Done');
+            $cordovaDialogs.alert('All pushes cancelled');
         }, this);
     };
 

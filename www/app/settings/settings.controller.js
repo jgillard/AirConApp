@@ -31,7 +31,7 @@ angular.module('app.settings', [])
 
     $scope.pushSchedule = function(minutes) {
         if (minutes) PushService.schedule(minutes);
-        else $cordovaDialogs.alert('Set the time interval', 'Heads Up');
+        else $cordovaDialogs.alert('Set the time interval');
     };
 
     /* IONIC DEPLOY */
@@ -43,25 +43,25 @@ angular.module('app.settings', [])
         $ionicDeploy.check().then(function(hasUpdate) {
             console.log('Ionic Deploy: Update available: ' + hasUpdate);
             $scope.hasUpdate = hasUpdate;
-            $cordovaDialogs.alert('No update available', 'Nada');
+            $cordovaDialogs.alert('No update available');
         }, function(err) {
             console.error('Ionic Deploy: Unable to check for updates', err);
             DebugService.emailDev(err, 'settings.controller:checkforUpdate:ionicDeploy.check');
-            $cordovaDialogs.alert('Error occurred', 'Heads Up');
+            $cordovaDialogs.alert('Error occurred');
         });
     };
 
     $scope.doUpdate = function() {
-        if ($scope.hasUpdate === null) $cordovaDialogs.alert('Other button first', 'Woah there!');
-        else if (!$scope.hasUpdate) $cordovaDialogs.alert('I already said no update', 'Pay attention');
+        if ($scope.hasUpdate === null) $cordovaDialogs.alert('Other button first dummy');
+        else if (!$scope.hasUpdate) $cordovaDialogs.alert('I already said no update!');
         else {
             $ionicDeploy.update().then(function(res) {
                 console.log('Ionic Deploy: Update Success! ', res);
-                $cordovaDialogs.alert('Update installed', 'Heads Up');
+                $cordovaDialogs.alert('Update installed');
             }, function(err) {
                 console.log('Ionic Deploy: Update error! ', err);
                 DebugService.emailDev(err, 'settings.controller:doUpdate:ionicDeploy.update');
-                $cordovaDialogs.alert('Error occurred', 'Heads Up');
+                $cordovaDialogs.alert('Error occurred');
             }, function(prog) {
                 console.log('Ionic Deploy: Progress... ', prog);
             });

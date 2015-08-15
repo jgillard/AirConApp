@@ -9,7 +9,7 @@ angular.module('app.core')
         cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
             if (!enabled) {
                 console.log('location disabled');
-                $cordovaDialogs.alert('We need location data on for this app to work', 'Location disabled')
+                $cordovaDialogs.alert('We need to turn on location data on for this app to work')
                 .then(function() {
                     cordova.plugins.diagnostic.switchToLocationSettings();
                 });
