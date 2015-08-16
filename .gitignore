@@ -13,4 +13,5 @@ www/assets/lib/
 build.json
 ionic.project
 gulpfile.js
-AirConApp2/config/global.json
+AirConApp/config/global.json
+AirConApp/public/index.html

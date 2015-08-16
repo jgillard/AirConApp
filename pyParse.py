@@ -131,7 +131,7 @@ def analyze(data, user):
 def sendSMS(to, body):
     if enableSMS:
         data = {'message': body, 'to': to}
-        r = requests.post('https://api.parse.com/1/functions/sendSMS', data=data, headers=headers)
+        r = requests.post('https://api.parse.com/1/functions/pySendSMS', data=data, headers=headers)
         print (r.status_code)
         if r.status_code != 200:
             print(r.text)
