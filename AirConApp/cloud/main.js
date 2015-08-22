@@ -61,7 +61,7 @@ Parse.Cloud.job('userMonitor', function(request, status) {
                 if (deltaAck > 0 && deltaNow > 600000) {
                     console.log('WARNING! SMS function called for ' + userKey);
                     var params = {userId: userKey, alarm: false, message:
-                        'AirConApp: Please press Acknowledge in the next 10 minutes or sirens will start blaring'};
+                        'AirConApp: You missed a push. Please press RESET in the next 10 minutes.'};
                     Parse.Cloud.run('sendSMS', params, {
                         success: function(response) {
                             console.log(response);
@@ -76,7 +76,8 @@ Parse.Cloud.job('userMonitor', function(request, status) {
                 if (deltaAck > 0 && deltaNow > 1200000) {
                     console.log('ALERT! SMS function called for the boss man');
                     var params = {userId: userKey, alarm: true, message:
-                        'AirConApp: lastAck: ' + users[userKey].pushAcknowledged + ', lastSched: ' + users[userKey].pushScheduled};
+                        'AirConApp: lastAck: ' + users[userKey].pushAcknowledged.toGMTString() +
+                                ', lastSched: ' + users[userKey].pushScheduled.toGMTString() };
                     Parse.Cloud.run('sendSMS', params, {
                         success: function(response) {
                             console.log(response);
@@ -147,7 +148,7 @@ Parse.Cloud.define('sendSMS', function(request, response) {
                                     response.error(err);
                                 } else {
                                     // Add entry to SMS sent table
-                                    var SMS = Parse.Object.extend("SMS");
+                                    var SMS = Parse.Object.extend('SMS');
                                     var sms = new SMS();
                                     sms.set('to', phonenumber);
                                     sms.set('message', message);
