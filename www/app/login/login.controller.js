@@ -1,6 +1,6 @@
 angular.module('app.login', [])
 
-.controller('LoginCtrl', function($scope, $state, $cordovaDialogs, UserService, DebugService) {
+.controller('LoginCtrl', function($scope, $state, $cordovaDialogs, $ionicViewSwitcher, UserService, DebugService) {
     'use strict';
 
     // Defaults for development
@@ -52,6 +52,7 @@ angular.module('app.login', [])
 
     $scope.callAuth = function(username, password, email, phoneNum, signingUp) {
         UserService.auth(username, password, email, phoneNum, signingUp).then(function() {
+            $ionicViewSwitcher.nextDirection('forward');
             $state.go('tab.home');
         }, function(error) {
             $cordovaDialogs.alert(error.message, 'Error: ' + error.code, 'Try again!');

@@ -1,6 +1,7 @@
 angular.module('app.home', [])
 
-.controller('HomeCtrl', function($scope, $ionicLoading, $ionicPlatform, $cordovaDialogs, UserService, PushService, LocationService) {
+.controller('HomeCtrl', function($scope, $ionicLoading, $ionicPlatform, $cordovaDialogs, $state, $ionicViewSwitcher,
+        UserService, PushService, LocationService) {
     'use strict';
 
     $scope.username = UserService.username;
@@ -27,6 +28,11 @@ angular.module('app.home', [])
             $scope.gotLoc = false;
         });
     });
+
+    $scope.goSettings = function() {
+        $ionicViewSwitcher.nextDirection('forward');
+        $state.go('tab.settings');
+    };
 
     /* PUSH NOTIFICATION STUFF */
 

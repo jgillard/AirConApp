@@ -1,8 +1,13 @@
 angular.module('app.settings', [])
 
-.controller('SettingsCtrl', function($scope, $ionicDeploy, $cordovaDialogs, $cordovaInAppBrowser,
+.controller('SettingsCtrl', function($scope, $ionicDeploy, $cordovaDialogs, $cordovaInAppBrowser, $state, $ionicViewSwitcher,
     PushService, DebugService) {
     'use strict';
+
+    $scope.goHome = function() {
+        $ionicViewSwitcher.nextDirection('back');
+        $state.go('tab.home');
+    };
 
     $scope.gotoAPK = function() {
         $cordovaInAppBrowser.open('http://jamesgillard.com/AirConApp.apk', '_system');
