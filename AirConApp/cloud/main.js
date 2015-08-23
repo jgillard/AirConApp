@@ -1,7 +1,7 @@
 'use strict';
 
 Parse.Cloud.job('userMonitor', function(request, status) {
-    var moment = require('moment');
+    var moment = require('cloud/moment-timezone-with-data-2010-2020.js');
 
     var now = moment();
     var today = now.startOf('day');
@@ -43,7 +43,6 @@ Parse.Cloud.job('userMonitor', function(request, status) {
                     }
                 }
             }
-            console.log('USERS');
             console.log(users);
 
             // Process latest times for each user
@@ -56,9 +55,12 @@ Parse.Cloud.job('userMonitor', function(request, status) {
                 var deltaAck = users[userKey].pushScheduled - users[userKey].pushAcknowledged;
                 // And pushTriggered age greater than 10 minutes
                 var deltaNow = moment() - users[userKey].pushTriggered;
+                // And pushScheduled was today
+                var sameDay = users[userKey].pushScheduled - today;
+                sameDay = (sameDay > 0) ? true : false;
 
-                console.log('userId: ' + userKey + ', dAck: ' + deltaAck + ', dNow: ' + deltaNow);
-                if (deltaAck > 0 && deltaNow > 600000) {
+                console.log('userId: ' + userKey + ', dAck: ' + deltaAck + ', dNow: ' + deltaNow + ', sameDay: ' + sameDay);
+                if (deltaAck > 0 && deltaNow > 600000 && sameDay) {
                     console.log('WARNING! SMS function called for ' + userKey);
                     var params = {userId: userKey, alarm: false, message:
                         'AirConApp: You missed a push. Please press RESET in the next 10 minutes.'};
@@ -73,11 +75,12 @@ Parse.Cloud.job('userMonitor', function(request, status) {
                         }
                     });
                 }
-                if (deltaAck > 0 && deltaNow > 1200000) {
+                if (deltaAck > 0 && deltaNow > 1200000 && sameDay) {
                     console.log('ALERT! SMS function called for the boss man');
+                    var ackString = moment(users[userKey].pushAcknowledged).tz('Europe/London').format('ddd DD-MM-YY HH:mm:ss');
+                    var schedString = moment(users[userKey].pushScheduled).tz('Europe/London').format('ddd DD-MM-YY HH:mm:ss');
                     var params = {userId: userKey, alarm: true, message:
-                        'AirConApp: lastAck: ' + users[userKey].pushAcknowledged.toGMTString() +
-                                ', lastSched: ' + users[userKey].pushScheduled.toGMTString() };
+                        'AirConApp: lastAck: ' + ackString + ', lastSched: ' + schedString };
                     Parse.Cloud.run('sendSMS', params, {
                         success: function(response) {
                             console.log(response);
