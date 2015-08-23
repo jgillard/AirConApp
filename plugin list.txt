@@ -10,6 +10,7 @@ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications#
 ionic add ionic-service-deploy
 ionic plugin add https://github.com/driftyco/ionic-plugins-deploy
 cordova plugin add cordova-plugin-inappbrowser
+cordova plugin add cordova-plugin-vibration
 
 [MANUAL]
 assets/lib/parse-1.5.0.js

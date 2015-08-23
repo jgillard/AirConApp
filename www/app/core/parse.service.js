@@ -17,6 +17,7 @@ angular.module('app.core')
             status.save(null, {
                 success: function(status) {
                     console.log('DATA SAVED TO PARSE: ' + key);
+                    navigator.vibrate([20,50,20]);
                 },
                 error: function(status, error) {
                     console.error(error, status);
