@@ -16,26 +16,25 @@ angular.module('app.core')
             }
         }, function(error){
             console.log('services.locationEnabled: ' + error);
-            DebugService.emailDev(error, 'login.service:locationEnabled:cdv.plgs.diag.isLocEn');
+            DebugService.emailDev(error, 'location.service:locationEnabled:cdv.plgs.diag.isLocEn');
         });
     };
 
     o.getCurrentPosition = function(timeout) {
-        if (typeof timeout === 'undefined') timeout = 5000;
+        if (typeof timeout === 'undefined') timeout = 30000;
         var defer = $q.defer();
-        // 5 second timeout, 5 minute maxAge
-        var posOptions = {timeout: timeout, maximumAge: 300000, enableHighAccuracy: false};
+        // 30 second timeout, 5 minute maxAge
+        var posOptions = {timeout: timeout, maximumAge: 0, enableHighAccuracy: true};
         $cordovaGeolocation.getCurrentPosition(posOptions)
             .then(function (position) {
                 var posData = {};
                 posData.latitude = position.coords.latitude.toFixed(5);
                 posData.longitude = position.coords.longitude.toFixed(5);
                 posData.accuracy = Math.round(position.coords.accuracy);
-                console.log('geoloc updated @services.getCurPos');
                 defer.resolve(posData);
             }, function(err) {
                 console.error('services.getCurPos: ' + err);
-                DebugService.emailDev(err, 'login.service:getCurPos:cdvGeo.getCurPos');
+                DebugService.emailDev(err, 'location.service:getCurPos:cdvGeo.getCurPos');
                 defer.reject('Could not get your location');
             })
         ;

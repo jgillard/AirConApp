@@ -1,6 +1,6 @@
 angular.module('app.home', [])
 
-.controller('HomeCtrl', function($scope, $ionicLoading, $cordovaDialogs, UserService, PushService, LocationService) {
+.controller('HomeCtrl', function($scope, $ionicLoading, $ionicPlatform, $cordovaDialogs, UserService, PushService, LocationService) {
     'use strict';
 
     $scope.username = UserService.username;
@@ -18,6 +18,15 @@ angular.module('app.home', [])
         });
     };
     $scope.init();
+
+    $ionicPlatform.on('resume', function(){
+        $scope.gotLoc = false;
+        LocationService.getCurrentPosition().then(function() {
+            $scope.gotLoc = true;
+        }, function() {
+            $scope.gotLoc = false;
+        });
+    });
 
     /* PUSH NOTIFICATION STUFF */
 

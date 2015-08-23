@@ -23,7 +23,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         console.info('ready');
         ConnectionService.checkConnection();
         LocationService.locationEnabled();
-        LocationService.getCurrentPosition(10000);
+        LocationService.getCurrentPosition();
     });
 
     $ionicPlatform.on('resume', function(){
