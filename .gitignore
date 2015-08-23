@@ -4,6 +4,7 @@ plugins/
 resources/
 scss/
 www/assets/lib/
+node_modules/
 
 *.sublime-project
 *.sublime-workspace
