@@ -7,10 +7,9 @@ angular.module('app.core')
 
     o.emailDev = function(error, location) {
         var message = JSON.stringify(error);
-        $cordovaDialogs.alert('Something\'s gone wrong, please send this email')
-        .then(function() {
-            var ref = cordova.InAppBrowser.open('mailto:jamesgillard@live.co.uk?subject=AirConApp+Error&body=' + location + message, '_system');
-        });
+        var toSubject = 'mailto:jamesgillard@live.co.uk?subject=AirConApp+Error&body=';
+        var explanation = 'Something has gone wrong with the app. Please send this email:\n\n';
+        var instance = cordova.InAppBrowser.open( toSubject + explanation + location + message, '_system');
     };
 
     return o;

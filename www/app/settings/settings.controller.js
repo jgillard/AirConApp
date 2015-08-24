@@ -52,7 +52,6 @@ angular.module('app.settings', [])
         }, function(err) {
             console.error('Ionic Deploy: Unable to check for updates', err);
             DebugService.emailDev(err, 'settings.controller:checkforUpdate:ionicDeploy.check');
-            $cordovaDialogs.alert('Error occurred');
         });
     };
 
@@ -66,7 +65,6 @@ angular.module('app.settings', [])
             }, function(err) {
                 console.log('Ionic Deploy: Update error! ', err);
                 DebugService.emailDev(err, 'settings.controller:doUpdate:ionicDeploy.update');
-                $cordovaDialogs.alert('Error occurred');
             }, function(prog) {
                 console.log('Ionic Deploy: Progress... ', prog);
             });
