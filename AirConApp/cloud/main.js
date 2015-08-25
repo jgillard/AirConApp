@@ -4,7 +4,7 @@ Parse.Cloud.job('userMonitor', function(request, status) {
     var moment = require('cloud/moment-timezone-with-data-2010-2020.js');
 
     var now = moment();
-    var today = now.startOf('day');
+    var today = moment().startOf('day');
 
     // Get all of today's pushes
     var Pushes = Parse.Object.extend('Pushes');
@@ -25,9 +25,9 @@ Parse.Cloud.job('userMonitor', function(request, status) {
                 if ( !(user.id in users) ) {
                     users[user.id] = {
                         username: user.username,
-                        pushScheduled: now,
-                        pushTriggered: now,
-                        pushAcknowledged: now
+                        pushScheduled: today._d,
+                        pushTriggered: today._d,
+                        pushAcknowledged: today._d
                     };
                 }
 
@@ -36,7 +36,7 @@ Parse.Cloud.job('userMonitor', function(request, status) {
                     var column = header[j];
                     var entryTime = entry.get(column);
                     if (entryTime) {
-                        var userTime = users[userId][column]['_d'];
+                        var userTime = users[userId][column];
                         if (entryTime > userTime) {
                             users[userId][column] = entryTime;
                         }
@@ -53,8 +53,8 @@ Parse.Cloud.job('userMonitor', function(request, status) {
                 // If latest pushScheduled newer than latest pushAcknowledged
                 // ie. not responded to - should usually be negative
                 var deltaAck = users[userKey].pushScheduled - users[userKey].pushAcknowledged;
-                // And pushTriggered age greater than 10 minutes
-                var deltaNow = moment() - users[userKey].pushTriggered;
+                // And pushScheduled age greater than 10 minutes
+                var deltaNow = moment() - users[userKey].pushScheduled;
                 // And pushScheduled was today
                 var sameDay = users[userKey].pushScheduled - today;
                 sameDay = (sameDay > 0) ? true : false;
