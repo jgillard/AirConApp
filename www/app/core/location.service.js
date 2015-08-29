@@ -20,25 +20,57 @@ angular.module('app.core')
         });
     };
 
-    o.getCurrentPosition = function(timeout) {
-        if (typeof timeout === 'undefined') timeout = 30000;
-        var defer = $q.defer();
-        // 30 second timeout, 5 minute maxAge
-        var posOptions = {timeout: timeout, maximumAge: 0, enableHighAccuracy: true};
-        $cordovaGeolocation.getCurrentPosition(posOptions)
-            .then(function (position) {
-                var posData = {};
-                posData.latitude = position.coords.latitude.toFixed(5);
-                posData.longitude = position.coords.longitude.toFixed(5);
-                posData.accuracy = Math.round(position.coords.accuracy);
-                defer.resolve(posData);
-            }, function(err) {
-                console.error('services.getCurPos: ' + err);
-                DebugService.emailDev(err, 'location.service:getCurPos:cdvGeo.getCurPos');
-                defer.reject('Could not get your location');
-            })
-        ;
-        return defer.promise;
+    /* BACKGROUND GEOLOC */
+
+    o.posData = {};
+    o.bgGeoEnabled = false;
+
+    o.callbackFn = function(location) {
+        console.log('[js] BackgroundGeoLocation callback:', location);
+        o.posData.latitude = parseFloat(location.latitude).toFixed(5);
+        o.posData.longitude = parseFloat(location.longitude).toFixed(5);
+        o.posData.accuracy = Math.round(parseFloat(location.accuracy));
+        o.bgGeoEnabled = true;
+
+        var GeoLoc = Parse.Object.extend('GeoLoc');
+        var geoLoc = new GeoLoc();
+        geoLoc.set('lat', o.posData.latitude);
+        geoLoc.set('long', o.posData.longitude);
+        geoLoc.set('acc', o.posData.accuracy);
+        geoLoc.save(null, {
+            success: function(geoLoc) {
+            },
+            error: function(geoLoc, error) {
+                alert('geoloc save error');
+                console.log(error);
+            }
+        });
+
+        window.backgroundGeoLocation.finish();
+    };
+
+    o.failureFn = function(error) {
+        console.log('BackgroundGeoLocation error: ' + error);
+        emailDev(error, 'location.service:bgGeolocStart:failureFn');
+    };
+
+    o.bgGeolocStart = function() {
+        window.backgroundGeoLocation.configure(o.callbackFn, o.failureFn, {
+            desiredAccuracy: 100,
+            stationaryRadius: 50,
+            distanceFilter: 50,
+            notificationTitle: 'AirConApp Location Tracking',
+            notificationText: 'ENABLED',
+            locationTimeout: 300, // minimum interval in seconds
+            debug: true, // beeps on event
+            stopOnTerminate: true // forces stop() on app termination
+        });
+        window.backgroundGeoLocation.start();
+    };
+
+    o.bgGeolocStop = function() {
+        window.backgroundGeoLocation.stop();
+        o.bgGeoEnabled = false;
     };
 
     return o;

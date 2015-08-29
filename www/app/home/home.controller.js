@@ -5,33 +5,24 @@ angular.module('app.home', [])
     'use strict';
 
     $scope.username = UserService.username;
-    $scope.gotLoc = false;
+    $scope.bgGeoEnabled = true;
 
     // Defaults for development
     $scope.end = new Date();
 
-    $scope.init = function() {
-        console.log('getPos from Home init()');
-        LocationService.getCurrentPosition().then(function() {
-            $scope.gotLoc = true;
-        }, function() {
-            $scope.gotLoc = false;
-        });
-    };
-    $scope.init();
-
-    $ionicPlatform.on('resume', function(){
-        $scope.gotLoc = false;
-        LocationService.getCurrentPosition().then(function() {
-            $scope.gotLoc = true;
-        }, function() {
-            $scope.gotLoc = false;
-        });
+    $scope.$on('$viewContentLoaded', function(){
+        $scope.bgGeoEnabled = LocationService.bgGeoEnabled;
     });
 
     $scope.goSettings = function() {
         $ionicViewSwitcher.nextDirection('forward');
         $state.go('tab.settings');
+    };
+
+    $scope.toggleBgGeo = function() {
+        if ($scope.bgGeoEnabled) LocationService.bgGeolocStop();
+        else LocationService.bgGeolocStart();
+        $scope.bgGeoEnabled = !$scope.bgGeoEnabled;
     };
 
     /* PUSH NOTIFICATION STUFF */
@@ -87,19 +78,6 @@ angular.module('app.home', [])
         cordova.plugins.notification.local.cancelAll(function() {
             $cordovaDialogs.alert('All pushes cancelled');
         }, this);
-    };
-
-    /* GEOLOCATION STUFF */
-
-    $scope.showLocating = function() {
-        $ionicLoading.show({
-            template: 'Getting your location...',
-            delay: 500
-        });
-    };
-
-    $scope.hideLocating = function(){
-        $ionicLoading.hide();
     };
 
 });

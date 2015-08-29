@@ -23,14 +23,13 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         console.info('ready');
         ConnectionService.checkConnection();
         LocationService.locationEnabled();
-        LocationService.getCurrentPosition();
+        LocationService.bgGeolocStart();
     });
 
     $ionicPlatform.on('resume', function(){
         console.info('resume');
         ConnectionService.checkConnection();
         LocationService.locationEnabled();
-        LocationService.getCurrentPosition();
     });
 
     $rootScope.$on('$cordovaLocalNotification:schedule', function (event, notification, state) {
@@ -72,7 +71,6 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         ParseService.savePush('pushAcknowledged', acknowledgedTime);
         $cordovaLocalNotification.clearAll();
         var pushData = eval('(' + notification.data + ')');
-        console.log('pushData:', pushData);
         // Branch based on what function scheduled th notification
         if (pushData.func != 'multiple') {
             // For single pushes ask for a repeat
