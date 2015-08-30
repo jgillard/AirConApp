@@ -32,26 +32,12 @@ angular.module('app.core')
         o.posData.accuracy = Math.round(parseFloat(location.accuracy));
         o.bgGeoEnabled = true;
 
-        var GeoLoc = Parse.Object.extend('GeoLoc');
-        var geoLoc = new GeoLoc();
-        geoLoc.set('lat', o.posData.latitude);
-        geoLoc.set('long', o.posData.longitude);
-        geoLoc.set('acc', o.posData.accuracy);
-        geoLoc.save(null, {
-            success: function(geoLoc) {
-            },
-            error: function(geoLoc, error) {
-                alert('geoloc save error');
-                console.log(error);
-            }
-        });
-
         window.backgroundGeoLocation.finish();
     };
 
     o.failureFn = function(error) {
         console.log('BackgroundGeoLocation error: ' + error);
-        emailDev(error, 'location.service:bgGeolocStart:failureFn');
+        DebugService.emailDev(error, 'location.service:bgGeolocStart:failureFn');
     };
 
     o.bgGeolocStart = function() {

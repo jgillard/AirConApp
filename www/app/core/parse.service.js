@@ -1,6 +1,6 @@
 angular.module('app.core')
 
-.factory('ParseService', function(LocationService, DebugService) {
+.factory('ParseService', function($localStorage, LocationService, DebugService) {
     'use strict';
 
     var o = {};
@@ -21,8 +21,32 @@ angular.module('app.core')
             },
             error: function(status, error) {
                 console.error(error, status);
-                DebugService.emailDev(JSON.stringify(status) + JSON.stringify(error),
-                    'parse.service:savePush:LocServ.getCurPos');
+                if (error.code === 100) {
+                    $localStorage.parseQueue.push(status);
+                    navigator.vibrate([250,100,50]);
+                } else {
+                    DebugService.emailDev(JSON.stringify(status) + JSON.stringify(error),
+                        'parse.service:savePush:save');
+                }
+            }
+        });
+    };
+
+    o.retrySave = function(data) {
+        data.save(null, {
+            success: function(push) {
+                console.log('DATA SAVED TO PARSE: retrySave');
+                navigator.vibrate([200,50,200]);
+            },
+            error: function(push, error) {
+                console.error(error, push);
+                if (error.code === 100) {
+                    $localStorage.parseQueue.push(push);
+                    navigator.vibrate([250,100,50]);
+                } else {
+                    DebugService.emailDev(JSON.stringify(status) + JSON.stringify(error),
+                        'parse.service:savePush:save');
+                }
             }
         });
     };

@@ -12,6 +12,7 @@ ionic plugin add https://github.com/driftyco/ionic-plugins-deploy
 cordova plugin add cordova-plugin-inappbrowser
 cordova plugin add cordova-plugin-vibration
 cordova plugin add cordova-plugin-mauron85-background-geolocation
+bower install ngstorage
 
 [MANUAL]
 assets/lib/parse-1.5.0.js

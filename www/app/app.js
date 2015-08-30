@@ -1,9 +1,9 @@
 angular.module('app.core', []);
 
-angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy', 'ngCordova',
+angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy', 'ngCordova', 'ngStorage',
     'app.core', 'app.login', 'app.tabs', 'app.home', 'app.settings'])
 
-.run(function($ionicPlatform, $state, $rootScope, $cordovaDialogs, $cordovaVibration,
+.run(function($ionicPlatform, $state, $rootScope, $cordovaDialogs, $cordovaVibration, $localStorage,
         $cordovaLocalNotification, PushService, LocationService, ParseService, ConnectionService) {
     'use strict';
 
@@ -21,6 +21,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         $cordovaVibration.vibrate(100);
 
         console.info('ready');
+        $localStorage.parseQueue = [];
         ConnectionService.checkConnection();
         LocationService.locationEnabled();
         LocationService.bgGeolocStart();
