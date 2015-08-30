@@ -8,7 +8,7 @@ angular.module('AirConApp')
     .state('tab', {
         url: '/tab',
         abstract: true,
-        templateUrl: 'app/core/tabs.html',
+        templateUrl: 'app/tabs/tabs.html',
         controller: 'TabsCtrl',
         // resolve: {
         //     populateSession: function(UserService) {
