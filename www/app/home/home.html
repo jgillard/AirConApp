@@ -1,4 +1,4 @@
-<ion-view view-title="AirConApp" on-swipe-left="goSettings()" nav-transition="android">
+<ion-view view-title="AirConApp" on-swipe-left="goSettings()" nav-transition="android" hide-nav-bar="false">
   <ion-content scroll="false" class="home-page">
 
     <!-- GEOLOCATION TOP ROW -->
@@ -7,7 +7,7 @@
       <div class="col">
         <button class="button button-block" ng-click="toggleBgGeo()"
                 ng-class="{'button-assertive': !bgGeoEnabled, 'button-balanced': bgGeoEnabled}">
-          Geolocation
+          Background Geolocation
         </button>
       </div>
     </div>

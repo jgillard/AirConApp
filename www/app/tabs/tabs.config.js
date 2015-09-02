@@ -10,11 +10,6 @@ angular.module('AirConApp')
         abstract: true,
         templateUrl: 'app/tabs/tabs.html',
         controller: 'TabsCtrl',
-        // resolve: {
-        //     populateSession: function(UserService) {
-        //         return UserService.checkSession();
-        //     }
-        // },
         onEnter: function($state, UserService) {
             UserService.checkSession().then(function(hasSession) {
                 if (!hasSession) $state.go('login');
@@ -45,12 +40,12 @@ angular.module('AirConApp')
     .state('login', {
         url: '/',
         templateUrl: 'app/login/login.html',
-        controller: 'LoginCtrl'
-        // onEnter: function($state, UserService) {
-        //     UserService.checkSession().then(function(hasSession) {
-        //         if (hasSession) $state.go('tab.home');
-        //     })
-        // }
+        controller: 'LoginCtrl',
+        onEnter: function($state, UserService) {
+            UserService.checkSession().then(function(hasSession) {
+                if (hasSession) $state.go('tab.home');
+            });
+        }
     });
 
     // if none of the above states are matched, use this as the fallback

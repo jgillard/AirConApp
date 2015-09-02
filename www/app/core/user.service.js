@@ -66,6 +66,7 @@ angular.module('app.core')
             var user = $localstorage.getObject('user');
             if (user.username) {
                 o.setSession(user.username);
+                defer.resolve(true);
             } else {
                 defer.resolve(false);
             }
