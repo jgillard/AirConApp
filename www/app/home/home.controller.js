@@ -5,24 +5,33 @@ angular.module('app.home', [])
     'use strict';
 
     $scope.username = UserService.username;
-    $scope.bgGeoEnabled = true;
+    $scope.gotLoc = false;
 
     // Defaults for development
     $scope.end = new Date();
 
-    $scope.$on('$viewContentLoaded', function(){
-        $scope.bgGeoEnabled = LocationService.bgGeoEnabled;
+   $scope.init = function() {
+        console.log('getPos from Home init()');
+        LocationService.getCurrentPosition().then(function() {
+            $scope.gotLoc = true;
+        }, function() {
+            $scope.gotLoc = false;
+        });
+    };
+    $scope.init();
+
+    $ionicPlatform.on('resume', function(){
+        $scope.gotLoc = false;
+        LocationService.getCurrentPosition().then(function() {
+            $scope.gotLoc = true;
+        }, function() {
+            $scope.gotLoc = false;
+        });
     });
 
     $scope.goSettings = function() {
         $ionicViewSwitcher.nextDirection('forward');
         $state.go('tab.settings');
-    };
-
-    $scope.toggleBgGeo = function() {
-        if ($scope.bgGeoEnabled) LocationService.bgGeolocStop();
-        else LocationService.bgGeolocStart();
-        $scope.bgGeoEnabled = !$scope.bgGeoEnabled;
     };
 
     /* PUSH NOTIFICATION STUFF */
@@ -69,7 +78,7 @@ angular.module('app.home', [])
             }
             var deltat = Math.round(nextPush - Date.now()/1000);
             console.log(numPush + ' push(es) scheduled in ' + deltat + ' seconds');
-            if (numPush > 1) $cordovaDialogs.alert(numPush + ' pushes scheduled\nFirst in ' + deltat + ' seconds');
+            if (numPush > 1) $cordovaDialogs.alert(numPush + ' pushes scheduled\nNext in ' + deltat + ' seconds');
             else $cordovaDialogs.alert(numPush + ' push scheduled for ' + deltat + ' seconds time!');
         });
     };

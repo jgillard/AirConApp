@@ -24,13 +24,14 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         $localStorage.parseQueue = [];
         ConnectionService.checkConnection();
         LocationService.locationEnabled();
-        LocationService.bgGeolocStart();
+        LocationService.getCurrentPosition();
     });
 
     $ionicPlatform.on('resume', function(){
         console.info('resume');
         ConnectionService.checkConnection();
         LocationService.locationEnabled();
+        LocationService.getCurrentPosition();
     });
 
     $rootScope.$on('$cordovaLocalNotification:schedule', function (event, notification, state) {

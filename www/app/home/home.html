@@ -5,9 +5,9 @@
 
     <div class="row">
       <div class="col">
-        <button class="button button-block" ng-click="toggleBgGeo()"
-                ng-class="{'button-assertive': !bgGeoEnabled, 'button-balanced': bgGeoEnabled}">
-          Background Geolocation
+        <button class="button button-block"
+                ng-class="{'button-assertive': !gotLoc, 'button-balanced': gotLoc}">
+          Geolocation
         </button>
       </div>
     </div>
