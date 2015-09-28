@@ -1,6 +1,6 @@
 angular.module('app.core')
 
-.factory('UserService', function($q, $localstorage, $cordovaDialogs) {
+.factory('UserService', function($q, $localStorage, $cordovaDialogs) {
     'use strict';
 
     var o = {
@@ -54,7 +54,7 @@ angular.module('app.core')
 
     o.setSession = function(username) {
         if (username) o.username = username;
-        $localstorage.setObject('user', {username: username});
+        $localStorage.user = {username: username};
         console.log('User added to localstorage');
     };
 
@@ -63,10 +63,12 @@ angular.module('app.core')
         if (o.username) {
             defer.resolve(true);
         } else {
-            var user = $localstorage.getObject('user');
-            if (user.username) {
-                o.setSession(user.username);
-                defer.resolve(true);
+            var user = $localStorage.user;
+            if (user) {
+                if (user.username) {
+                    o.setSession(user.username);
+                    defer.resolve(true);
+                }
             } else {
                 defer.resolve(false);
             }
@@ -76,7 +78,7 @@ angular.module('app.core')
 
     o.destroySession = function() {
         Parse.User.logOut();
-        $localstorage.setObject('user', {});
+        $localStorage.user = {};
         o.username = false;
         console.log('User session destroyed');
     };
