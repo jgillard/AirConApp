@@ -1,6 +1,6 @@
 angular.module('app.core')
 
-.factory('PushService', function($cordovaLocalNotification, $cordovaDialogs, ParseService) {
+.factory('PushService', function($cordovaLocalNotification, $cordovaDialogs, $localStorage, ParseService) {
     'use strict';
 
     var o = {};
@@ -38,12 +38,13 @@ angular.module('app.core')
         console.log('Multiple Scheduling Calcs', {end: end, endGetTime: end.getTime(),
                 nowGetTime: now.getTime(), dMins: deltaMins, dSecs: deltaSecs, numPushes: numPushes});
 
-        var pushArray = [];
+        // Put all pushes into LocalStorage PushQueue, and schedule 1st
+        $localStorage.pushQueue = [];
         var nextPush = now;
         for (var i = 0; i < numPushes; i++) {
             nextPush.setMinutes(nextPush.getMinutes() + interval);
             var nextPush2 = Math.round(nextPush.getTime() / 1000);
-            pushArray[i] = {
+            $localStorage.pushQueue[i] = {
                 id: i,
                 text: 'Schedule Multiple Pushes',
                 // every: interval, // string only in iOS (e.g. 'minutes', 'hours')
@@ -52,7 +53,7 @@ angular.module('app.core')
                 icon: icon
             };
         }
-        $cordovaLocalNotification.schedule(pushArray);
+        $cordovaLocalNotification.schedule($localStorage.pushQueue.shift());
         setTimeout(callback, 500);
     };
 

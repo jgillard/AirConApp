@@ -1,7 +1,7 @@
 angular.module('app.settings', [])
 
 .controller('SettingsCtrl', function($scope, $ionicDeploy, $cordovaDialogs, $cordovaInAppBrowser, $state,
-    $ionicViewSwitcher, $localStorage, PushService, DebugService, ParseService) {
+    $ionicViewSwitcher, $localStorage, PushService, DebugService) {
     'use strict';
 
     $scope.goHome = function() {
@@ -32,8 +32,13 @@ angular.module('app.settings', [])
         else $cordovaDialogs.alert('Set the time interval');
     };
 
-    $scope.showLocalStorageParseQueue = function() {
+    $scope.showParseQueue = function() {
         alert(JSON.stringify($localStorage.parseQueue));
+    };
+
+    $scope.showPushQueue = function() {
+        alert(JSON.stringify($localStorage.pushQueue));
+        console.log($localStorage.pushQueue);
     };
 
     /* IONIC DEPLOY */

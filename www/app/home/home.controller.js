@@ -1,7 +1,7 @@
 angular.module('app.home', [])
 
-.controller('HomeCtrl', function($scope, $ionicLoading, $ionicPlatform, $cordovaDialogs, $state, $ionicViewSwitcher,
-        UserService, PushService, LocationService) {
+.controller('HomeCtrl', function($scope, $ionicLoading, $ionicPlatform, $cordovaDialogs, $state,
+        $ionicViewSwitcher, $localStorage, UserService, PushService, LocationService) {
     'use strict';
 
     $scope.username = UserService.username;
@@ -71,13 +71,12 @@ angular.module('app.home', [])
                 return;
             }
             console.log(response);
-            var numPush = response.length;
-            var nextPush = 1893455940;
-            for (var push = 0; push < numPush; push++) {
-                if (response[push].at < nextPush) nextPush = response[push].at;
-            }
+            var queuedPush = $localStorage.pushQueue.length;
+            var nextPush = response[0].at;
             var deltat = Math.round(nextPush - Date.now()/1000);
-            console.log(numPush + ' push(es) scheduled in ' + deltat + ' seconds');
+
+            // include the currently pending push (not in queue)
+            var numPush = queuedPush + 1;
             if (numPush > 1) $cordovaDialogs.alert(numPush + ' pushes scheduled\nNext in ' + deltat + ' seconds');
             else $cordovaDialogs.alert(numPush + ' push scheduled for ' + deltat + ' seconds time!');
         });

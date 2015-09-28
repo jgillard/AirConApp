@@ -22,6 +22,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
 
         console.info('ready');
         $localStorage.parseQueue = [];
+        $localStorage.pushQueue = [];
         $rootScope.init();
     });
 
@@ -50,6 +51,7 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
 
     $rootScope.$on('$cordovaLocalNotification:trigger', function (event, notification, state) {
         console.log('TRIGGERED',notification, state);
+        $cordovaLocalNotification.schedule($localStorage.pushQueue.shift());
         var triggeredTime = new Date();
         ParseService.savePush('pushTriggered', triggeredTime);
         if (state == 'foreground') {
