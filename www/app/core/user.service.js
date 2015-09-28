@@ -26,29 +26,32 @@ angular.module('app.core')
                 success: function(user) {
                     console.log('User logged in');
                     o.setSession(username);
-
-                    // Detect different phone number to what Parse knows, and update it.
-                    if (window.plugins) {
-                        var savedNumber = user.attributes.phonenumber;
-                        if (number.substring(0,3) === '+44') {
-                            number = number.replace('+44', '0');
-                        }
-                        if (savedNumber.substring(0,3) === '+44') {
-                            savedNumber = savedNumber.replace('+44', '0');
-                        }
-                        if (number !== savedNumber) {
-                            console.log('savedNum:', savedNumber, 'newNum:', number);
-                            $cordovaDialogs.alert('This phone\'s number is different to the one on your account\n\nThis will be updated now')
-                            .then(function(buttonIndex) {
-                                if (buttonIndex === 1) {
-                                    user.set('phonenumber', number);
-                                    user.save().then(function() { $cordovaDialogs.alert('Phone number updated', 'Done'); });
-                                }
-                            });
-                        }
-                    }
+                    o.checkPhone(user, number);
                 }
             });
+        }
+    };
+
+    o.checkPhone = function(user, number) {
+        // Detect different phone number to what Parse knows, and update it.
+        if (window.plugins) {
+            var savedNumber = user.attributes.phonenumber;
+            if (number.substring(0,3) === '+44') {
+                number = number.replace('+44', '0');
+            }
+            if (savedNumber.substring(0,3) === '+44') {
+                savedNumber = savedNumber.replace('+44', '0');
+            }
+            if (number !== savedNumber) {
+                console.log('savedNum:', savedNumber, 'newNum:', number);
+                $cordovaDialogs.alert('This phone\'s number is different to the one on your account\n\nThis will be updated now')
+                .then(function(buttonIndex) {
+                    if (buttonIndex === 1) {
+                        user.set('phonenumber', number);
+                        user.save().then(function() { $cordovaDialogs.alert('Phone number updated', 'Done'); });
+                    }
+                });
+            }
         }
     };
 
