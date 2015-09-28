@@ -23,15 +23,13 @@ angular.module('app.settings', [])
         // if (checked === true) head.appendChild(script);
     };
 
-    $scope.pushNow = function() {
-        PushService.now();
-    };
-
     $scope.getAll = function() {
         cordova.plugins.notification.local.getAll(function (notifications) {
             console.info('Stragglers:', notifications);
             alert(notifications.length);
         });
+    $scope.sendAck = function() {
+        PushService.sendAck();
     };
 
     $scope.pushSchedule = function(minutes) {

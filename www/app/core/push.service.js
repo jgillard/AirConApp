@@ -1,20 +1,17 @@
 angular.module('app.core')
 
-.factory('PushService', function($cordovaLocalNotification) {
+.factory('PushService', function($cordovaLocalNotification, $cordovaDialogs, ParseService) {
     'use strict';
 
     var o = {};
 
     var icon = 'file://assets/img/doge.jpg';
 
-    o.now = function() {
-       $cordovaLocalNotification.schedule({
-            id: 0,
-            text: 'Test Push Now',
-            data: { func: 'now' },
-            icon: icon,
-            sound: 'file://assets/sound/eagle.wav'
-        });
+    o.sendAck = function() {
+        // fake notification for acknowledge()
+        var notification = {};
+        notification.data = '{"func":"reset"}';
+        o.acknowledge(notification);
     };
 
     o.schedule = function(minutes) {
@@ -57,6 +54,23 @@ angular.module('app.core')
         }
         $cordovaLocalNotification.schedule(pushArray);
         setTimeout(callback, 500);
+    };
+
+    o.acknowledge = function(notification) {
+        var acknowledgedTime = new Date();
+        ParseService.savePush('pushAcknowledged', acknowledgedTime);
+        $cordovaLocalNotification.clearAll();
+        var pushData = eval('(' + notification.data + ')');
+        // Branch based on what function scheduled the notification
+        if (pushData.func === 'reset') $cordovaDialogs.alert('Reset successful');
+        else {
+            // MULTIPLE: For queued pushes, wait until none left
+            cordova.plugins.notification.local.getAllScheduled(function (response) {
+                if (response === 'undefined' || response.length === 0) {
+                     $cordovaDialogs.alert('That was the last one. Schedule more if necessary');
+                }
+            });
+        }
     };
 
     return o;

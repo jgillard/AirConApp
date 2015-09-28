@@ -22,17 +22,19 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
 
         console.info('ready');
         $localStorage.parseQueue = [];
-        ConnectionService.checkConnection();
-        LocationService.locationEnabled();
-        LocationService.getCurrentPosition();
+        $rootScope.init();
     });
 
     $ionicPlatform.on('resume', function(){
         console.info('resume');
+        $rootScope.init();
+    });
+
+    $rootScope.init = function() {
         ConnectionService.checkConnection();
         LocationService.locationEnabled();
         LocationService.getCurrentPosition();
-    });
+    };
 
     $rootScope.$on('$cordovaLocalNotification:schedule', function (event, notification, state) {
         console.log('SCHEDULED', notification, state);
@@ -60,38 +62,12 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
 
     $rootScope.$on('$cordovaLocalNotification:click', function (event, notification, state) {
         console.log('CLICKED', notification, state, notification.id);
-        $rootScope.acknowledge(notification);
+        PushService.acknowledge(notification);
     });
 
     $rootScope.$on('$cordovaLocalNotification:clear', function (event, notification, state) {
         console.log('CLEARED', notification, state);
-        $rootScope.acknowledge(notification);
+        PushService.acknowledge(notification);
     });
-
-    $rootScope.acknowledge = function(notification) {
-        var acknowledgedTime = new Date();
-        ParseService.savePush('pushAcknowledged', acknowledgedTime);
-        $cordovaLocalNotification.clearAll();
-        var pushData = eval('(' + notification.data + ')');
-        // Branch based on what function scheduled th notification
-        if (pushData.func != 'multiple') {
-            // For single pushes ask for a repeat
-            $cordovaDialogs.confirm('The same again?', 'Nice one!', ['YAY', 'NAY'])
-            .then(function(buttonIndex) {
-                if (buttonIndex == 1) {
-                    if (pushData.func == 'now') PushService.now();
-                    else if (pushData.func == 'schedule') PushService.schedule(pushData.minutes);
-                    else alert('Dev screwed up...');
-                }
-            });
-        } else {
-            // For queued pushes, wait until none left
-            cordova.plugins.notification.local.getAllScheduled(function (response) {
-                if (response === 'undefined' || response.length === 0) {
-                     $cordovaDialogs.alert('That was the last one. Schedule more if necessary');
-                }
-            });
-        }
-    };
 
 });
