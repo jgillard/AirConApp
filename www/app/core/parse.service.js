@@ -11,25 +11,23 @@ angular.module('app.core')
         var push = new Push();
         push.set(key, value);
         push.set('user', user);
-        LocationService.getCurrentPosition().then(function(posData) {
-            var location = {lat: posData.latitude, long: posData.longitude, acc: posData.accuracy};
-            push.set('location', location);
-            push.save(null, {
-                success: function(push) {
-                    console.log('DATA SAVED TO PARSE: ' + key);
-                    navigator.vibrate([20,50,20]);
-                },
-                error: function(push, error) {
-                    console.error(error, push);
-                    if (error.code === 100) {
-                        $localStorage.parseQueue.push(push);
-                        navigator.vibrate([250,100,50]);
-                    } else {
-                        DebugService.emailDev(JSON.stringify(push) + JSON.stringify(error),
-                            'parse.service:savePush:save');
-                    }
+        var location = {lat: LocationService.posData.latitude, long: LocationService.posData.longitude, acc: LocationService.posData.accuracy};
+        push.set('location', location);
+        push.save(null, {
+            success: function(push) {
+                console.log('DATA SAVED TO PARSE: ' + key);
+                navigator.vibrate([20,50,20]);
+            },
+            error: function(push, error) {
+                console.error(error, push);
+                if (error.code === 100) {
+                    $localStorage.parseQueue.push(push);
+                    navigator.vibrate([250,100,50]);
+                } else {
+                    DebugService.emailDev(JSON.stringify(push) + JSON.stringify(error),
+                        'parse.service:savePush:save');
                 }
-            });
+            }
         });
     };
 

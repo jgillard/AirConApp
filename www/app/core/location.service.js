@@ -3,7 +3,9 @@ angular.module('app.core')
 .factory('LocationService', function($q, $cordovaGeolocation, $cordovaDialogs, DebugService) {
     'use strict';
 
-    var o = {};
+    var o = {
+        posData: {}
+    };
 
     o.locationEnabled = function() {
         cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
@@ -28,10 +30,10 @@ angular.module('app.core')
         $cordovaGeolocation.getCurrentPosition(posOptions)
             .then(function (position) {
                 var posData = {};
-                posData.latitude = position.coords.latitude.toFixed(5);
-                posData.longitude = position.coords.longitude.toFixed(5);
-                posData.accuracy = Math.round(position.coords.accuracy);
-                defer.resolve(posData);
+                o.posData.latitude = position.coords.latitude.toFixed(5);
+                o.posData.longitude = position.coords.longitude.toFixed(5);
+                o.posData.accuracy = Math.round(position.coords.accuracy);
+                defer.resolve(o.posData);
             }, function(err) {
                 console.error('services.getCurPos: ' + err);
                 DebugService.emailDev(err, 'location.service:getCurPos:cdvGeo.getCurPos');
