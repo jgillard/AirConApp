@@ -3,7 +3,7 @@ angular.module('app.core', []);
 angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
     'app.core', 'app.login', 'app.tabs', 'app.home', 'app.settings'])
 
-.run(function($ionicPlatform, $state, $rootScope, $cordovaDialogs, $cordovaVibration, $localStorage,
+.run(function($ionicPlatform, $rootScope, $cordovaDialogs, $cordovaVibration, $localStorage,
         $cordovaLocalNotification, PushService, LocationService, ParseService, ConnectionService) {
     'use strict';
 
@@ -17,7 +17,6 @@ angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
 
         Parse.initialize('fhuSblfircn10OfsD4VPtpXQoFAH2lHFgXtu6YdL', 'cpyzcS6oynBqqBiHr3eEBGfA02AceKVJnaZAcKi5');
         Parse.User.enableRevocableSession();
-        // $ionicAnalytics.register();
         $cordovaVibration.vibrate(100);
 
         console.info('ready');
@@ -57,7 +56,7 @@ angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
         var triggeredTime = new Date();
         ParseService.savePush('pushTriggered', triggeredTime);
         if (state == 'foreground') {
-            $cordovaDialogs.confirm('Send acknowledgement.', '', 'Ack')
+            $cordovaDialogs.alert('Send acknowledgement.', '', 'Ack')
             .then(function() {
                 $rootScope.$emit('$cordovaLocalNotification:click', notification);
             });

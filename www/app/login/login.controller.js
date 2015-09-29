@@ -57,8 +57,14 @@ angular.module('app.login', [])
             $ionicViewSwitcher.nextDirection('forward');
             $state.go('tab.home');
         }, function(error) {
-            $cordovaDialogs.alert(error.message, 'Error: ' + error.code, 'Try again!', '');
-            console.log('UserService.auth ' + error.message + ' Error: ' + error.code);
+            if (error.code === 101) {
+                $cordovaDialogs.alert('Invalid login details.', '');
+            } else if (error.code === 203) {
+                $cordovaDialogs.alert('Email address already in use.', '');
+            } else {
+                DebugService.emailDev(error, 'login.controller:callAuth');
+                console.log('UserService.auth ' + error.message + ' Error: ' + error.code);
+            }
         });
     };
 
@@ -71,8 +77,14 @@ angular.module('app.login', [])
                     success: function() {
                         $cordovaDialogs.alert('You\'ll recieve an email shortly.', '');
                     }, error: function(error) {
-                        console.log('ResetPW error: ' + error.code + ' ' + error.message);
-                        DebugService.emailDev(error, 'login.controller:resetPW:Parse.User.requestPasswordReset');
+                        if (error.code === 125) {
+                            $cordovaDialogs.alert('Invalid email address.', '');
+                        } else if (error.code === 205) {
+                            $cordovaDialogs.alert('Email address not found.', '');
+                        } else {
+                            console.log('ResetPW error: ' + error.code + ' ' + error.message);
+                            DebugService.emailDev(error, 'login.controller:resetPW:Parse.User.requestPasswordReset');
+                        }
                     }
                 });
             }

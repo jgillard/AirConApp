@@ -1,6 +1,6 @@
 angular.module('app.core')
 
-.factory('DebugService', function($cordovaDialogs) {
+.factory('DebugService', function() {
     'use strict';
 
     var o = {};
@@ -8,8 +8,14 @@ angular.module('app.core')
     o.emailDev = function(error, location) {
         var message = JSON.stringify(error);
         var toSubject = 'mailto:jamesgillard@live.co.uk?subject=AirConApp+Error&body=';
-        var explanation = 'Something has gone wrong with the app. Please send this email:\n\n';
-        var instance = cordova.InAppBrowser.open( toSubject + explanation + location + message, '_system');
+        var explanation = 'Something has gone wrong with the app. Please send this email:';
+        var device = 'Cordova: ' + window.device.cordova + ', ' +
+                     'Manufacturer: ' + window.device.manufacturer + ', ' +
+                     'Model: ' + window.device.model + ', ' +
+                     'UUID: ' + window.device.uuid + ', ' +
+                     'Platform: ' + window.device.platform + ', ' +
+                     'Version: ' + window.device.version;
+        var instance = cordova.InAppBrowser.open( toSubject + explanation + location + message + device, '_system');
     };
 
     return o;

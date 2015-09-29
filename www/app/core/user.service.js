@@ -15,6 +15,7 @@ angular.module('app.core')
         if (signingUp) {
             user.set('email', email);
             user.set('phonenumber', number);
+            user.set('uuid', window.device.uuid);
             return user.signUp(null, {
                 success: function(user) {
                     o.setSession(username);
@@ -48,6 +49,7 @@ angular.module('app.core')
                 .then(function() {
                     console.log('updating phone number');
                     user.set('phonenumber', number);
+                    user.set('uuid', window.device.uuid);
                     user.save().then(function() {
                         $cordovaDialogs.alert('Phone number stored.', '');
                     });
