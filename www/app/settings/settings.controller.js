@@ -14,7 +14,7 @@ angular.module('app.settings', [])
     };
 
     $scope.jsconsoleToggle = function(checked) {
-        alert('CURRENTLY DISABLED');
+        $cordovaDialogs.alert('Function currently disabled.', '');
         return;
         // var head = document.getElementsByTagName('head')[0];
         // var script = document.createElement('script');
@@ -29,11 +29,12 @@ angular.module('app.settings', [])
 
     $scope.pushSchedule = function(minutes) {
         if (minutes) PushService.schedule(minutes);
-        else $cordovaDialogs.alert('Set the time interval');
+        else $cordovaDialogs.alert('Set the time interval.', '');
     };
 
     $scope.showParseQueue = function() {
         alert(JSON.stringify($localStorage.parseQueue));
+        console.log($localStorage.parseQueue);
     };
 
     $scope.showPushQueue = function() {

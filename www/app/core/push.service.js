@@ -20,7 +20,7 @@ angular.module('app.core')
         scheduleTime.setSeconds(scheduleTime.getSeconds() + minutes); // for development
         $cordovaLocalNotification.schedule({
             id: 0,
-            text: 'Schedule Local Push',
+            text: 'Swipe to acknowledge',
             at: scheduleTime,
             data: { func: 'schedule', minutes: minutes},
             icon: icon
@@ -46,7 +46,7 @@ angular.module('app.core')
             var nextPush2 = Math.round(nextPush.getTime() / 1000);
             $localStorage.pushQueue[i] = {
                 id: i,
-                text: 'Schedule Multiple Pushes',
+                text: 'Swipe to acknowledge',
                 // every: interval, // string only in iOS (e.g. 'minutes', 'hours')
                 at: nextPush2,
                 data: { func: 'multiple' },
@@ -63,12 +63,11 @@ angular.module('app.core')
         $cordovaLocalNotification.clearAll();
         var pushData = eval('(' + notification.data + ')');
         // Branch based on what function scheduled the notification
-        if (pushData.func === 'reset') $cordovaDialogs.alert('Reset successful');
-        else {
+        if (pushData.func !== 'reset') {
             // MULTIPLE: For queued pushes, wait until none left
             cordova.plugins.notification.local.getAllScheduled(function (response) {
                 if (response === 'undefined' || response.length === 0) {
-                     $cordovaDialogs.alert('That was the last one. Schedule more if necessary');
+                     $cordovaDialogs.alert('That was the last one.\nSchedule more if still working.', '', 'understood');
                 }
             });
         }

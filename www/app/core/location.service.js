@@ -11,7 +11,7 @@ angular.module('app.core')
         cordova.plugins.diagnostic.isLocationEnabled(function(enabled) {
             if (!enabled) {
                 console.log('location disabled');
-                $cordovaDialogs.alert('We need to turn on location data on for this app to work')
+                $cordovaDialogs.alert('We need to turn on location data on for this app to work.', '', 'enable')
                 .then(function() {
                     cordova.plugins.diagnostic.switchToLocationSettings();
                 });
@@ -37,7 +37,7 @@ angular.module('app.core')
             }, function(err) {
                 console.error('services.getCurPos: ' + err);
                 DebugService.emailDev(err, 'location.service:getCurPos:cdvGeo.getCurPos');
-                defer.reject('Could not get your location');
+                defer.reject();
             })
         ;
         return defer.promise;

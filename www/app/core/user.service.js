@@ -44,12 +44,13 @@ angular.module('app.core')
             }
             if (number !== savedNumber) {
                 console.log('savedNum:', savedNumber, 'newNum:', number);
-                $cordovaDialogs.alert('This phone\'s number is different to the one on your account\n\nThis will be updated now')
-                .then(function(buttonIndex) {
-                    if (buttonIndex === 1) {
-                        user.set('phonenumber', number);
-                        user.save().then(function() { $cordovaDialogs.alert('Phone number updated', 'Done'); });
-                    }
+                $cordovaDialogs.alert('This phone\'s number is different to the one on your account.', '', 'update now')
+                .then(function() {
+                    console.log('updating phone number');
+                    user.set('phonenumber', number);
+                    user.save().then(function() {
+                        $cordovaDialogs.alert('Phone number stored.', '');
+                    });
                 });
             }
         }

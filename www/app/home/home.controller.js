@@ -58,27 +58,30 @@ angular.module('app.home', [])
         var delta = new Date() - end;
         if (interval && end) {
             if (delta < 0) PushService.multiple(interval, end, $scope.isScheduled);
-            else $cordovaDialogs.alert('That end time is in the past!');
+            else $cordovaDialogs.alert('That end time is in the past.', '', 'i\'ll change it');
         } else {
-            $cordovaDialogs.alert('You missed something');
+            $cordovaDialogs.alert('No interval entered.', '');
         }
     };
 
     $scope.isScheduled = function() {
         cordova.plugins.notification.local.getScheduled(function (response) {
             if (!response[0]) {
-                $cordovaDialogs.alert('No pushes scheduled');
                 return;
             }
             console.log(response);
             var queuedPush = $localStorage.pushQueue.length;
             var nextPush = response[0].at;
-            var deltat = Math.round(nextPush - Date.now()/1000);
+            var deltaSec = Math.round(nextPush - Date.now()/1000);
+            var deltaMin = Math.round(deltaSec / 60);
 
             // include the currently pending push (not in queue)
             var numPush = queuedPush + 1;
-            if (numPush > 1) $cordovaDialogs.alert(numPush + ' pushes scheduled\nNext in ' + deltat + ' seconds');
-            else $cordovaDialogs.alert(numPush + ' push scheduled for ' + deltat + ' seconds time!');
+            if (numPush > 1) {
+                if (deltaMin > 1) $cordovaDialogs.alert(numPush + ' pushes scheduled.\nNext in ' + deltaMin + ' minutes.', '');
+                else $cordovaDialogs.alert(numPush + ' pushes scheduled.\nNext in ' + deltaMin + ' minute.', '');
+            }
+            else $cordovaDialogs.alert(numPush + ' push scheduled for ' + deltaMin + ' minutes time.', '');
         });
     };
 

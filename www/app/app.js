@@ -55,9 +55,9 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
         var triggeredTime = new Date();
         ParseService.savePush('pushTriggered', triggeredTime);
         if (state == 'foreground') {
-            $cordovaDialogs.confirm('Acknowledge me :)', 'Push', ['Ack', 'Cancel'])
-            .then(function(buttonIndex) {
-                if (buttonIndex == 1) $rootScope.$emit('$cordovaLocalNotification:click', notification);
+            $cordovaDialogs.confirm('Send acknowledgement.', '', 'Ack')
+            .then(function() {
+                $rootScope.$emit('$cordovaLocalNotification:click', notification);
             });
         }
     });
