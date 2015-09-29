@@ -40,18 +40,20 @@ angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy'
     $rootScope.$on('$cordovaLocalNotification:schedule', function (event, notification, state) {
         console.log('SCHEDULED', notification, state);
         var scheduledTime = new Date(notification.at * 1000);
-        var deltat = Math.round((scheduledTime - Date.now()) / 1000);
+        // var deltat = Math.round((scheduledTime - Date.now()) / 1000);
         ParseService.savePush('pushScheduled', scheduledTime);
-        $cordovaLocalNotification.getAllScheduled(function (response) {
-            if (deltat > 0 && response.length == 1) {
-                $cordovaDialogs.alert('Next push in ' + deltat + ' seconds', 'Success');
-            }
-        });
+        // $cordovaLocalNotification.getAllScheduled(function (response) {
+        //     if (deltat > 0 && response.length == 1) {
+        //         $cordovaDialogs.alert('Next push in ' + deltat + ' seconds', 'Success');
+        //     }
+        // });
     });
 
     $rootScope.$on('$cordovaLocalNotification:trigger', function (event, notification, state) {
         console.log('TRIGGERED',notification, state);
-        $cordovaLocalNotification.schedule($localStorage.pushQueue.shift());
+        if($localStorage.pushQueue.length > 0) {
+            $cordovaLocalNotification.schedule($localStorage.pushQueue.shift());
+        }
         var triggeredTime = new Date();
         ParseService.savePush('pushTriggered', triggeredTime);
         if (state == 'foreground') {
