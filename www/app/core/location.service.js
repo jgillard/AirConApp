@@ -36,7 +36,7 @@ angular.module('app.core')
                 defer.resolve(o.posData);
             }, function(err) {
                 console.error('services.getCurPos: ' + err);
-                DebugService.emailDev(err, 'location.service:getCurPos:cdvGeo.getCurPos');
+                // DebugService.emailDev(err, 'location.service:getCurPos:cdvGeo.getCurPos');
                 defer.reject();
             })
         ;

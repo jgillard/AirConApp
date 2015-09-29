@@ -73,10 +73,15 @@ angular.module('app.home', [])
             // include the currently pending push (not in queue)
             var numPush = queuedPush + 1;
             if (numPush > 1) {
-                if (deltaMin > 1) $cordovaDialogs.alert(numPush + ' pushes scheduled.\nNext in ' + deltaMin + ' minutes.', '');
-                else $cordovaDialogs.alert(numPush + ' pushes scheduled.\nNext in ' + deltaMin + ' minute.', '');
+                var string = numPush + ' pushes scheduled';
+                if (deltaMin > 1) $cordovaDialogs.alert(string + '.\nNext in ' + deltaMin + ' minutes.', '');
+                else if (deltaMin === 1) $cordovaDialogs.alert(string + '.\nNext in 1 minute.', '');
+                else $cordovaDialogs.alert(string + '.\nNext in < 1 minute.', '');
+            } else {
+                var string = '1 push scheduled';
+                if (deltaMin > 0) $cordovaDialogs.alert(string + ' for ' + deltaMin + ' minutes time.', '');
+                else $cordovaDialogs.alert(string + ' for < 1 minutes time.', '');
             }
-            else $cordovaDialogs.alert(numPush + ' push scheduled for ' + deltaMin + ' minutes time.', '');
         });
     };
 

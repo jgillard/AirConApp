@@ -44,15 +44,27 @@ angular.module('app.core')
         for (var i = 0; i < numPushes; i++) {
             nextPush.setMinutes(nextPush.getMinutes() + interval);
             var nextPush2 = Math.round(nextPush.getTime() / 1000);
-            $localStorage.pushQueue[i] = {
-                id: i,
-                text: 'Swipe to acknowledge',
-                // every: interval, // string only in iOS (e.g. 'minutes', 'hours')
-                at: nextPush2,
-                data: { func: 'multiple' },
-                icon: icon
-            };
+            // (numPushes - 1) allows changing of final push text
+            if (i < (numPushes - 1)) {
+                $localStorage.pushQueue[i] = {
+                    id: i,
+                    text: 'Swipe to acknowledge',
+                    // every: interval, // string only in iOS (e.g. 'minutes', 'hours')
+                    at: nextPush2,
+                    data: { func: 'multiple' },
+                    icon: icon
+                };
+            } else {
+                $localStorage.pushQueue[i] = {
+                    id: i,
+                    text: 'FINAL PUSH. TAP FOR MORE',
+                    at: nextPush2,
+                    data: { func: 'multiple' },
+                    icon: icon
+                };
+            }
         }
+
         $cordovaLocalNotification.schedule($localStorage.pushQueue.shift());
         setTimeout(callback, 500);
     };
