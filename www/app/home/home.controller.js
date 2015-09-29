@@ -4,29 +4,23 @@ angular.module('app.home', [])
         $ionicViewSwitcher, $localStorage, UserService, PushService, LocationService) {
     'use strict';
 
-    $scope.username = UserService.username;
-    $scope.gotLoc = false;
-
-    // Defaults for development
-    $scope.end = new Date();
-
-   $scope.init = function() {
-        console.log('getPos from Home init()');
-        LocationService.getCurrentPosition().then(function() {
-            $scope.gotLoc = true;
-        }, function() {
-            $scope.gotLoc = false;
-        });
-    };
-    $scope.init();
-
-    $ionicPlatform.on('resume', function(){
+    var updateGeoBtn = function() {
         $scope.gotLoc = false;
         LocationService.getCurrentPosition().then(function() {
             $scope.gotLoc = true;
         }, function() {
             $scope.gotLoc = false;
         });
+    };
+
+    var init = function() {
+        console.log('getPos from Home init()');
+        updateGeoBtn();
+    };
+    init();
+
+    $ionicPlatform.on('resume', function(){
+        updateGeoBtn();
     });
 
     $scope.goSettings = function() {
@@ -67,6 +61,7 @@ angular.module('app.home', [])
     $scope.isScheduled = function() {
         cordova.plugins.notification.local.getScheduled(function (response) {
             if (!response[0]) {
+                $cordovaDialogs.alert('No pushes scheduled.', '');
                 return;
             }
             console.log(response);
@@ -87,7 +82,8 @@ angular.module('app.home', [])
 
     $scope.cancelAll = function() {
         cordova.plugins.notification.local.cancelAll(function() {
-            $cordovaDialogs.alert('All pushes cancelled');
+            PushService.sendAck();
+            $cordovaDialogs.alert('All pushes cancelled and reset.', '');
         }, this);
     };
 
