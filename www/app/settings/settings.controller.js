@@ -1,6 +1,6 @@
 angular.module('app.settings', [])
 
-.controller('SettingsCtrl', function($scope, $ionicDeploy, $cordovaDialogs, $cordovaInAppBrowser, $state,
+.controller('SettingsCtrl', function($scope, $cordovaDialogs, $cordovaInAppBrowser, $state,
     $ionicViewSwitcher, $localStorage, PushService) {
     'use strict';
 

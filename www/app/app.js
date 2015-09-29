@@ -1,6 +1,6 @@
 angular.module('app.core', []);
 
-angular.module('AirConApp', ['ionic','ionic.service.core','ionic.service.deploy', 'ngCordova', 'ngStorage',
+angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
     'app.core', 'app.login', 'app.tabs', 'app.home', 'app.settings'])
 
 .run(function($ionicPlatform, $state, $rootScope, $cordovaDialogs, $cordovaVibration, $localStorage,

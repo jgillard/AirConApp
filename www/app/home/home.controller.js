@@ -1,6 +1,6 @@
 angular.module('app.home', [])
 
-.controller('HomeCtrl', function($scope, $ionicLoading, $ionicPlatform, $cordovaDialogs, $state,
+.controller('HomeCtrl', function($scope, $ionicPlatform, $cordovaDialogs, $state,
         $ionicViewSwitcher, $localStorage, UserService, PushService, LocationService) {
     'use strict';
 
