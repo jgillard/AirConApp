@@ -55,12 +55,12 @@ angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
         }
         var triggeredTime = new Date();
         ParseService.savePush('pushTriggered', triggeredTime);
-        if (state == 'foreground') {
-            $cordovaDialogs.alert('Send acknowledgement.', '', 'Ack')
-            .then(function() {
-                $rootScope.$emit('$cordovaLocalNotification:click', notification);
-            });
-        }
+        // if (state == 'foreground') {
+        //     $cordovaDialogs.alert('Send acknowledgement.', '', 'Ack')
+        //     .then(function() {
+        //         $rootScope.$emit('$cordovaLocalNotification:click', notification);
+        //     });
+        // }
     });
 
     $rootScope.$on('$cordovaLocalNotification:click', function (event, notification, state) {

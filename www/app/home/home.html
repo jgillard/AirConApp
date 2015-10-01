@@ -7,7 +7,7 @@
       <div class="col">
         <button class="button button-block"
                 ng-class="{'button-assertive': !gotLoc, 'button-balanced': gotLoc}">
-          Geolocation
+          {{ gotLoc ? 'Geolocation OK' : 'Geolocation OFF' }}
         </button>
       </div>
     </div>

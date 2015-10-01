@@ -19,3 +19,4 @@ assets/lib/parse-1.5.0.js
 
 [CHANGES]
 No Dialog title: https://github.com/apache/cordova-plugin-dialogs/pull/55
+Datepicker: https://github.com/VitaliiBlagodir/cordova-plugin-datepicker/issues/101
