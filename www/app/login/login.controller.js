@@ -4,55 +4,80 @@ angular.module('app.login', [])
     'use strict';
 
     $scope.submitForm = function(username, password, email, signingUp) {
+        // Make sure all info has been entered
         if (!username) {
-            $cordovaDialogs.alert('Please enter a username.', ''); return;
+            $cordovaDialogs.alert('Please enter a username.', '');
+            return;
         } else if (!password) {
-            $cordovaDialogs.alert('Please enter a password.', ''); return;
+            $cordovaDialogs.alert('Please enter a password.', '');
+            return;
         } else if (!email && signingUp) {
-            $cordovaDialogs.alert('Please enter an email address.', ''); return;
+            $cordovaDialogs.alert('Please enter an email address.', '');
+            return;
         }
 
         // Logout existing user session
         if (Parse.User.current()) Parse.destroySession;
 
-        if (window.cordova) {
-            window.plugins.sim.getSimInfo(function(simInfo) {
-                if(simInfo.simState === 5) {
-                    if (!$scope.validPhoneNum(simInfo.phoneNumber)) return;
-                    $scope.callAuth(username, password, email, simInfo.phoneNumber, signingUp);
-                } else {
-                    console.log(simInfo);
-                    $cordovaDialogs.alert('SIM error.', '');
-                }
-            }, function(error) {
-                console.log(error);
-                DebugService.emailDev(error, 'login.controller:submitForm:getSimInfo');
-                if (signingUp) {
-                    $cordovaDialogs.prompt('Please enter this phone\'s number.', error, ['Submit'])
-                    .then(function(result) {
-                       if (!$scope.validPhoneNum(result.input1)) return;
-                        $scope.callAuth(username, password, email, result.input1, signingUp);
-                    });
-                } else {
-                    $scope.callAuth(username, password, email, undefined, signingUp);
-                }
-            });
+        var formInfo = {username: username, password: password, email: email, signingUp: signingUp};
+
+        window.plugins.sim.getSimInfo(
+            function(simInfo) {
+                getSimInfoSuccess(simInfo, formInfo);
+            },
+            function(error) {
+                getSimInfoFailure(error,formInfo);
+            }
+        );
+    };
+
+    var getSimInfoFailure = function(error, f) {
+        console.log('getSimInfo ' + error);
+        console.log('FailureF ' + f);
+        DebugService.emailDev(JSON.stringify(error), 'login.controller:submitForm:getSimInfo');
+        askPhoneNum();
+    };
+
+    var getSimInfoSuccess = function(simInfo, f) {
+        console.log('successF');
+        console.log(simInfo.phoneNumber);
+        if(simInfo.simState === 5) {
+            // if (validPhoneNum(simInfo.phoneNumber)) {
+            if (false) {
+                callAuth(f.username, f.password, f.email, simInfo.phoneNumber, f.signingUp);
+            } else {
+                console.log('success valid else');
+                askPhoneNum(f);
+            }
         } else {
-            $scope.callAuth(username, password, email, undefined, signingUp);
+            console.log(simInfo);
+            $cordovaDialogs.alert('SIM error.', '');
         }
     };
 
-    $scope.validPhoneNum = function(number) {
+    var askPhoneNum = function(f) {
+        console.log('askPhoneNum');
+        $cordovaDialogs.prompt('Please enter this phone\'s mobile number.')
+        .then(function(result) {
+            if (validPhoneNum(result.input1)) {
+                callAuth(f.username, f.password, f.email, result.input1, f.signingUp);
+            } else {
+                askPhoneNum();
+            }
+        });
+    };
+
+    var validPhoneNum = function(number) {
+        console.log('validPhoneNum');
         if ((number.substring(0,2) === '07' && number.length === 11) ||
             (number.substring(0,4) === '+447' && number.length === 13)) {
             return true;
         } else {
-            $cordovaDialogs.alert('Invalid mobile number.', '');
             return false;
         }
     };
 
-    $scope.callAuth = function(username, password, email, phoneNum, signingUp) {
+    var callAuth = function(username, password, email, phoneNum, signingUp) {
         UserService.auth(username, password, email, phoneNum, signingUp).then(function() {
             $ionicViewSwitcher.nextDirection('forward');
             $state.go('tab.home');
