@@ -42,8 +42,7 @@ angular.module('app.login', [])
         console.log('successF');
         console.log(simInfo.phoneNumber);
         if(simInfo.simState === 5) {
-            // if (validPhoneNum(simInfo.phoneNumber)) {
-            if (false) {
+            if (validPhoneNum(simInfo.phoneNumber)) {
                 callAuth(f.username, f.password, f.email, simInfo.phoneNumber, f.signingUp);
             } else {
                 console.log('success valid else');

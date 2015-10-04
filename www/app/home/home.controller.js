@@ -4,7 +4,7 @@ angular.module('app.home', [])
         $ionicViewSwitcher, $localStorage, UserService, PushService, LocationService) {
     'use strict';
 
-    var updateGeoBtn = function() {
+    $scope.updateGeoBtn = function() {
         $scope.gotLoc = false;
         LocationService.getCurrentPosition().then(function() {
             $scope.gotLoc = true;
@@ -15,12 +15,12 @@ angular.module('app.home', [])
 
     var init = function() {
         console.log('getPos from Home init()');
-        updateGeoBtn();
+        $scope.updateGeoBtn();
     };
     init();
 
     $ionicPlatform.on('resume', function(){
-        updateGeoBtn();
+        $scope.updateGeoBtn();
     });
 
     $scope.goSettings = function() {
