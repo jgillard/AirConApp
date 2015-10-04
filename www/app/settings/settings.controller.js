@@ -14,13 +14,13 @@ angular.module('app.settings', [])
     };
 
     $scope.jsconsoleToggle = function(checked) {
-        $cordovaDialogs.alert('Function currently disabled.', '');
-        return;
-        // var head = document.getElementsByTagName('head')[0];
-        // var script = document.createElement('script');
-        // script.type = 'text/javascript';
-        // script.src = 'http://jsconsole.com/remote.js?AirConApp';
-        // if (checked === true) head.appendChild(script);
+        //$cordovaDialogs.alert('Function currently disabled.', '');
+        //return;
+        var head = document.getElementsByTagName('head')[0];
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'http://jsconsole.com/remote.js?AirConApp';
+        if (checked === true) head.appendChild(script);
     };
 
     $scope.pushSchedule = function(minutes) {

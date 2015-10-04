@@ -1,6 +1,6 @@
 angular.module('app.core')
 
-.factory('DebugService', function() {
+.factory('DebugService', function(UserService) {
     'use strict';
 
     var o = {};
@@ -14,7 +14,8 @@ angular.module('app.core')
                      'Model: ' + window.device.model + ', ' +
                      'UUID: ' + window.device.uuid + ', ' +
                      'Platform: ' + window.device.platform + ', ' +
-                     'Version: ' + window.device.version;
+                     'Version: ' + window.device.version + ' , ' +
+                     'User: ' + UserService.username;
         var instance = cordova.InAppBrowser.open( toSubject + explanation + location + message + device, '_system');
     };
 
