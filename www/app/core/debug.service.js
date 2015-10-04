@@ -3,7 +3,9 @@ angular.module('app.core')
 .factory('DebugService', function(UserService) {
     'use strict';
 
-    var o = {};
+    var o = {
+        appVersion: '0.7.1.3'
+    };
 
     o.emailDev = function(error, location) {
         var message = JSON.stringify(error);
@@ -15,7 +17,8 @@ angular.module('app.core')
                      'UUID: ' + window.device.uuid + ', ' +
                      'Platform: ' + window.device.platform + ', ' +
                      'Version: ' + window.device.version + ' , ' +
-                     'User: ' + UserService.username;
+                     'User: ' + UserService.username + ', ' +
+                     'App Version: ' + o.appVersion;
         var instance = cordova.InAppBrowser.open( toSubject + explanation + location + message + device, '_system');
     };
 
