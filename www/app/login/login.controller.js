@@ -1,6 +1,6 @@
 angular.module('app.login', [])
 
-.controller('LoginCtrl', function($scope, $cordovaDialogs, LoginLogic, DebugService) {
+.controller('LoginCtrl', function($scope, $cordovaDialogs, LoginService, DebugService) {
     'use strict';
 
     $scope.submitForm = function(username, password, email, signingUp) {
@@ -23,10 +23,10 @@ angular.module('app.login', [])
 
         window.plugins.sim.getSimInfo(
             function(simInfo) {
-                LoginLogic.getSimInfoSuccess(simInfo, formInfo);
+                LoginService.getSimInfoSuccess(simInfo, formInfo);
             },
             function(error) {
-                LoginLogic.getSimInfoFailure(error,formInfo);
+                LoginService.getSimInfoFailure(error,formInfo);
             }
         );
     };

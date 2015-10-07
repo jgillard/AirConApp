@@ -1,24 +1,26 @@
-angular.module('app.login', [])
+angular.module('app.login')
 
-.controller('LoginLogic', function($state, $cordovaDialogs, $ionicViewSwitcher, UserService, DebugService) {
+.factory('LoginService', function($state, $cordovaDialogs, $ionicViewSwitcher, UserService, DebugService) {
     'use strict';
 
-    var getSimInfoFailure = function(error, f) {
+    var o = {};
+
+    o.getSimInfoFailure = function(error, f) {
         console.log('getSimInfo ' + error);
         console.log('FailureF ' + f);
         DebugService.emailDev(JSON.stringify(error), 'login.controller:submitForm:getSimInfo');
-        askPhoneNum();
+        o.askPhoneNum();
     };
 
-    var getSimInfoSuccess = function(simInfo, f) {
+    o.getSimInfoSuccess = function(simInfo, f) {
         console.log('successF');
         console.log(simInfo.phoneNumber);
         if(simInfo.simState === 5) {
-            if (validPhoneNum(simInfo.phoneNumber)) {
-                callAuth(f.username, f.password, f.email, simInfo.phoneNumber, f.signingUp);
+            if (o.validPhoneNum(simInfo.phoneNumber)) {
+                o.callAuth(f.username, f.password, f.email, simInfo.phoneNumber, f.signingUp);
             } else {
                 console.log('success valid else');
-                askPhoneNum(f);
+                o.askPhoneNum(f);
             }
         } else {
             console.log(simInfo);
@@ -26,19 +28,19 @@ angular.module('app.login', [])
         }
     };
 
-    var askPhoneNum = function(f) {
+    o.askPhoneNum = function(f) {
         console.log('askPhoneNum');
         $cordovaDialogs.prompt('Please enter this phone\'s mobile number.')
         .then(function(result) {
-            if (validPhoneNum(result.input1)) {
-                callAuth(f.username, f.password, f.email, result.input1, f.signingUp);
+            if (o.validPhoneNum(result.input1)) {
+                o.callAuth(f.username, f.password, f.email, result.input1, f.signingUp);
             } else {
-                askPhoneNum();
+                o.askPhoneNum();
             }
         });
     };
 
-    var validPhoneNum = function(number) {
+    o.validPhoneNum = function(number) {
         console.log('validPhoneNum');
         if ((number.substring(0,2) === '07' && number.length === 11) ||
             (number.substring(0,4) === '+447' && number.length === 13)) {
@@ -48,7 +50,7 @@ angular.module('app.login', [])
         }
     };
 
-    var callAuth = function(username, password, email, phoneNum, signingUp) {
+    o.callAuth = function(username, password, email, phoneNum, signingUp) {
         UserService.auth(username, password, email, phoneNum, signingUp).then(function() {
             $ionicViewSwitcher.nextDirection('forward');
             $state.go('tab.home');
@@ -63,5 +65,7 @@ angular.module('app.login', [])
             }
         });
     };
+
+    return o;
 
 });
