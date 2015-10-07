@@ -5,14 +5,20 @@ angular.module('app.core')
 
     var o = {};
 
-    o.savePush = function(key, value) {
+    o.savePush = function(key, value, notification) {
+        var pushData = eval('(' + notification.data + ')');
+
         var user = Parse.User.current();
         var Push = Parse.Object.extend('Pushes');
         var push = new Push();
         push.set(key, value);
         push.set('user', user);
-        var location = {lat: LocationService.posData.latitude, long: LocationService.posData.longitude, acc: LocationService.posData.accuracy};
+        var location = { lat: LocationService.posData.latitude,
+                         long: LocationService.posData.longitude,
+                         acc: LocationService.posData.accuracy
+        };
         push.set('location', location);
+        push.set('locStr', pushData.locStr);
         push.save(null, {
             success: function(push) {
                 console.log('DATA SAVED TO PARSE: ' + key);

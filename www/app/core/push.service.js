@@ -27,7 +27,7 @@ angular.module('app.core')
         });
     };
 
-    o.multiple = function(interval, end, callback) {
+    o.multiple = function(interval, end, location, callback) {
         $cordovaLocalNotification.cancelAll();
 
         var now = new Date();
@@ -51,7 +51,7 @@ angular.module('app.core')
                     text: 'Swipe to acknowledge',
                     // every: interval, // string only in iOS (e.g. 'minutes', 'hours')
                     at: nextPush2,
-                    data: { func: 'multiple' },
+                    data: { func: 'multiple', locStr: location },
                     icon: icon
                 };
             } else {
@@ -59,7 +59,7 @@ angular.module('app.core')
                     id: i,
                     text: 'FINAL PUSH. TAP FOR MORE',
                     at: nextPush2,
-                    data: { func: 'multiple' },
+                    data: { func: 'multiple', locStr: location },
                     icon: icon
                 };
             }
@@ -71,7 +71,7 @@ angular.module('app.core')
 
     o.acknowledge = function(notification) {
         var acknowledgedTime = new Date();
-        ParseService.savePush('pushAcknowledged', acknowledgedTime);
+        ParseService.savePush('pushAcknowledged', acknowledgedTime, notification);
         $cordovaLocalNotification.clearAll();
         var pushData = eval('(' + notification.data + ')');
         // Branch based on what function scheduled the notification

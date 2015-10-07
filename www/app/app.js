@@ -39,7 +39,7 @@ angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
     $rootScope.$on('$cordovaLocalNotification:schedule', function (event, notification, state) {
         console.log('SCHEDULED', notification, state);
         var scheduledTime = new Date(notification.at * 1000);
-        ParseService.savePush('pushScheduled', scheduledTime);
+        ParseService.savePush('pushScheduled', scheduledTime, notification);
     });
 
     $rootScope.$on('$cordovaLocalNotification:trigger', function (event, notification, state) {
@@ -48,7 +48,7 @@ angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
             $cordovaLocalNotification.schedule($localStorage.pushQueue.shift());
         }
         var triggeredTime = new Date();
-        ParseService.savePush('pushTriggered', triggeredTime);
+        ParseService.savePush('pushTriggered', triggeredTime, notification);
         // if (state == 'foreground') {
         //     $cordovaDialogs.alert('Send acknowledgement.', '', 'Ack')
         //     .then(function() {

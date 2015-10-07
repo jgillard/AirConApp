@@ -33,6 +33,15 @@ angular.module('app.home', [])
     $scope.multiple = {};
 
     $scope.showPicker = function() {
+        if (!$scope.multiple.interval) {
+            $cordovaDialogs.alert('No interval entered.', '');
+            return;
+        }
+        if (!$scope.multiple.location) {
+            $cordovaDialogs.alert('No location entered.', '');
+            return;
+        }
+
         var options = {
             date: new Date(),
             mode: 'time',
@@ -49,12 +58,14 @@ angular.module('app.home', [])
 
     $scope.pushMultiple = function(end) {
         var interval = $scope.multiple.interval;
+        var location = $scope.multiple.location;
         var delta = new Date() - end;
-        if (interval && end) {
-            if (delta < 0) PushService.multiple(interval, end, $scope.isScheduled);
-            else $cordovaDialogs.alert('That end time is in the past.', '', 'i\'ll change it');
-        } else {
-            $cordovaDialogs.alert('No interval entered.', '');
+
+        if (delta > 0) {
+            $cordovaDialogs.alert('That end time is in the past.', '', 'i\'ll change it');
+        }
+        if (interval && location && end && delta < 0) {
+            PushService.multiple(interval, end, location, $scope.isScheduled);
         }
     };
 
