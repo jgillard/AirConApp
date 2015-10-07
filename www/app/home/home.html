@@ -30,13 +30,10 @@
       </div>
     </div>
 
-    <!-- QUERY AND CANCEL ROW -->
-
     <div class="row">
       <div class="col">
-        <button class="button button-block button-calm" ng-click="isScheduled()">
-          Query Schedule
-        </button>
+        <p>Countdown: {{ countdown.mins }}:{{ countdown.secs }}</p>
+        <p>Pushes Left: {{ countdown.pushesLeft }}</p>
       </div>
       <div class="col">
         <button class="button button-block button-calm" ng-click="cancelAll()">

@@ -1,7 +1,7 @@
 angular.module('app.home', [])
 
-.controller('HomeCtrl', function($scope, $ionicPlatform, $cordovaDialogs, $state,
-        $ionicViewSwitcher, $localStorage, UserService, PushService, LocationService) {
+.controller('HomeCtrl', function($scope, $ionicPlatform, $cordovaDialogs, $state, $timeout,
+        $ionicViewSwitcher, $localStorage, PushService, LocationService) {
     'use strict';
 
     $scope.updateGeoBtn = function() {
@@ -96,9 +96,39 @@ angular.module('app.home', [])
         });
     };
 
+    $scope.countdown = {
+        mins: '0',
+        secs: '0',
+        pushesLeft: 0
+    };
+
+    var updateCountdown = function() {
+        cordova.plugins.notification.local.getScheduled(function (response) {
+            if (!response[0]) {
+                $scope.countdown.mins = '00';
+                $scope.countdown.secs = '00';
+                $scope.countdown.pushesLeft = 0;
+                return;
+            }
+
+            // Include the currently pending push (not in queue)
+            $scope.countdown.pushesLeft = $localStorage.pushQueue.length + 1;
+            var nextPush = response[0].at;
+            var deltaSecs = nextPush - Date.now()/1000;
+            var mins = Math.floor(deltaSecs / 60);
+            var secs = Math.floor(deltaSecs % 60);
+            $scope.countdown.mins = ('00' + mins).slice(-2);
+            $scope.countdown.secs = ('00' + secs).slice(-2);
+        });
+        $timeout(updateCountdown, 1000);
+    };
+
+    updateCountdown();
+
     $scope.cancelAll = function() {
         cordova.plugins.notification.local.cancelAll(function() {
             PushService.sendAck();
+            $localStorage.pushQueue = [];
             $cordovaDialogs.alert('All pushes cancelled and reset.', '');
         }, this);
     };
