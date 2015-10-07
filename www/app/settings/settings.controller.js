@@ -1,7 +1,7 @@
 angular.module('app.settings', [])
 
 .controller('SettingsCtrl', function($scope, $cordovaDialogs, $cordovaInAppBrowser, $state,
-    $ionicViewSwitcher, $localStorage, PushService) {
+    $ionicViewSwitcher, $localStorage) {
     'use strict';
 
     $scope.goHome = function() {
@@ -21,11 +21,6 @@ angular.module('app.settings', [])
         script.type = 'text/javascript';
         script.src = 'http://jsconsole.com/remote.js?AirConApp';
         if (checked === true) head.appendChild(script);
-    };
-
-    $scope.pushSchedule = function(minutes) {
-        if (minutes) PushService.schedule(minutes);
-        else $cordovaDialogs.alert('Set the time interval.', '');
     };
 
     $scope.showParseQueue = function() {
