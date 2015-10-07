@@ -1,9 +1,8 @@
 'use strict';
 
 Parse.Cloud.job('userMonitor', function(request, status) {
+    var queryCallbacks = require('cloud/queryCallbacks.js');
     var moment = require('cloud/moment-timezone-with-data-2010-2020.js');
-
-    var now = moment();
     var today = moment().startOf('day');
 
     // Get all of today's pushes
@@ -12,97 +11,30 @@ Parse.Cloud.job('userMonitor', function(request, status) {
     query.greaterThanOrEqualTo('createdAt', today.toDate());
     query.find({
         success: function(results) {
-
-            // Go through each entry in the Parse Pushes database
-            var users = {};
-            var header = ['pushScheduled', 'pushTriggered', 'pushAcknowledged'];
-            for (var i = 0; i < results.length; i++) {
-                var entry = results[i];
-                var user = entry.get('user');
-                var userId = user.id;
-
-                // Extract all user IDs
-                if ( !(user.id in users) ) {
-                    users[user.id] = {
-                        username: user.username,
-                        pushScheduled: today._d,
-                        pushTriggered: today._d,
-                        pushAcknowledged: today._d
-                    };
+            queryCallbacks.pushQuerySuccess(results, {
+                success: function() {
+                    //response.success();
+                },
+                error: function(error) {
+                    //response.error(error);
                 }
-
-                // Add latest time for each header column to each user
-                for (var j = 0; j < header.length; j++) {
-                    var column = header[j];
-                    var entryTime = entry.get(column);
-                    if (entryTime) {
-                        var userTime = users[userId][column];
-                        if (entryTime > userTime) {
-                            users[userId][column] = entryTime;
-                        }
-                    }
-                }
-            }
-            console.log(users);
-
-            // Process latest times for each user
-            var userKeys = Object.keys(users);
-            for (var i = 0; i < userKeys.length; i++) {
-                var userKey = userKeys[i];
-
-                // If latest pushScheduled newer than latest pushAcknowledged
-                // ie. not responded to - should usually be negative
-                var deltaAck = users[userKey].pushScheduled - users[userKey].pushAcknowledged;
-                // And pushScheduled age greater than 10 minutes
-                var deltaNow = moment() - users[userKey].pushScheduled;
-                // And pushScheduled was today
-                var sameDay = users[userKey].pushScheduled - today;
-                sameDay = (sameDay > 0) ? true : false;
-
-                console.log('userId: ' + userKey + ', dAck: ' + deltaAck + ', dNow: ' + deltaNow + ', sameDay: ' + sameDay);
-                if (deltaAck > 0 && deltaNow > 600000 && sameDay) {
-                    console.log('WARNING! SMS function called for ' + userKey);
-                    var params = {userId: userKey, alarm: false, message:
-                        'AirConApp: You missed a push. Please press RESET in the next 10 minutes.'};
-                    Parse.Cloud.run('sendSMS', params, {
-                        success: function(response) {
-                            console.log(response);
-                            status.success('User Monitor completed successfully.');
-                        },
-                        error: function(error) {
-                            console.log(error);
-                            status.error('Uh oh, something went wrong.');
-                        }
-                    });
-                }
-                if (deltaAck > 0 && deltaNow > 1200000 && sameDay) {
-                    console.log('ALERT! SMS function called for the boss man');
-                    var ackString = moment(users[userKey].pushAcknowledged).tz('Europe/London').format('ddd DD-MM-YY HH:mm:ss');
-                    var schedString = moment(users[userKey].pushScheduled).tz('Europe/London').format('ddd DD-MM-YY HH:mm:ss');
-                    var params = {userId: userKey, alarm: true, message:
-                        'AirConApp: lastAck: ' + ackString + ', lastSched: ' + schedString };
-                    Parse.Cloud.run('sendSMS', params, {
-                        success: function(response) {
-                            console.log(response);
-                            status.success('User Monitor completed successfully.');
-                        },
-                        error: function(error) {
-                            console.log(error);
-                            status.error('Uh oh, something went wrong.');
-                        }
-                    });
-                }
-            }
+            });
         },
-        error: function(object, error) {
-            console.log('QUERY.FIND ERROR');
-            console.log(error);
+        error: function(error) {
+            queryCallbacks.pushQueryFailure(error, {
+                success: function() {
+                    //response.success();
+                },
+                error: function(error) {
+                    //response.error(error);
+                }
+            });
         }
     }).then(function() {
         status.success('User Monitor completed successfully.');
     }, function(error) {
         console.log(error);
-        status.error('Uh oh, something went wrong.');
+        status.error('User Monitor failed spectacularly!');
     });
 });
 
@@ -121,14 +53,18 @@ Parse.Cloud.define('sendSMS', function(request, response) {
         query.find({
             success: function(user) {
                 var phonenumber;
-                var message;
+                var message = request.params.message;
+                var message2;
+
+                var lat = request.params.loc.lat;
+                var long = request.params.loc.long;
+                var gmapsURL = 'http://maps.google.com/maps?q=loc:' + lat + '+' + long;
+
                 if (request.params.alarm === true) {
                     phonenumber = '+447809146848';
-                    console.log(user[0].get('username'));
-                    message = request.params.message + ', User: ' + user[0].get('username');
+                    message2 = ', User: ' + user[0].get('username') + ', Loc: ' + request.params.locStr + ', Link: ' + gmapsURL;
                 } else {
                     phonenumber = user[0].get('phonenumber');
-                    message = request.params.message;
                 }
                 // Check whether an SMS already sent today
                 var today = moment().startOf('day');
@@ -138,8 +74,9 @@ Parse.Cloud.define('sendSMS', function(request, response) {
                 query.greaterThanOrEqualTo('createdAt', today.toDate());
                 query.find({
                     success: function(result) {
-                        console.log(result);
                         if (result.length === 0) {
+                            if (request.params.alarm === true) console.log('ALERT! SMS function called for the boss man');
+                            else console.log('WARNING! SMS function called for ' + user[0].get('username'));
                             client.sendSms({
                                 to: phonenumber,
                                 from: '+441613751791',
@@ -166,38 +103,21 @@ Parse.Cloud.define('sendSMS', function(request, response) {
                                     response.success(responseData);
                                 }
                             });
+                            if (message2) {
+                                client.sendSms({
+                                    to: phonenumber,
+                                    from: '+441613751791',
+                                    body: message2
+                                });
+                            }
                         } else {
-                            console.log('Already sent an SMS today');
+                            response.success('Already sent an SMS today');
                         }
                     },
                     error: function(object, error) {
                         console.log(error);
                     }
                 });
-            }
-        });
-    });
-});
-
-
-
-Parse.Cloud.define('pySendSMS', function(request, response) {
-
-    Parse.Config.get().then(function(config) {
-
-        var client = require('twilio')(config.get('TWILIO_ACCOUNT_SID'),
-                                       config.get('TWILIO_AUTH_TOKEN'));
-
-        client.sendSms({
-            to: request.params.to,
-            from: '+441613751791',
-            body: request.params.message
-        }, function(err, responseData) {
-            if (err) {
-                console.log(err);
-                response.error(err);
-            } else {
-                response.success(responseData);
             }
         });
     });
