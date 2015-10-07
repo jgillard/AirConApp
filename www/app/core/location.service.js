@@ -4,7 +4,8 @@ angular.module('app.core')
     'use strict';
 
     var o = {
-        posData: {}
+        posData: {},
+        locStr: ''
     };
 
     o.locationEnabled = function() {
@@ -29,7 +30,6 @@ angular.module('app.core')
         var posOptions = {timeout: timeout, maximumAge: 0, enableHighAccuracy: true};
         $cordovaGeolocation.getCurrentPosition(posOptions)
             .then(function (position) {
-                var posData = {};
                 o.posData.latitude = position.coords.latitude.toFixed(5);
                 o.posData.longitude = position.coords.longitude.toFixed(5);
                 o.posData.accuracy = Math.round(position.coords.accuracy);

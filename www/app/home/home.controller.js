@@ -58,7 +58,7 @@ angular.module('app.home', [])
 
     $scope.pushMultiple = function(end) {
         var interval = $scope.multiple.interval;
-        var location = $scope.multiple.location;
+        LocationService.locStr = $scope.multiple.location;
         var delta = new Date() - end;
 
         if (delta > 0) {

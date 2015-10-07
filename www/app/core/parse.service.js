@@ -5,9 +5,7 @@ angular.module('app.core')
 
     var o = {};
 
-    o.savePush = function(key, value, notification) {
-        var pushData = eval('(' + notification.data + ')');
-
+    o.savePush = function(key, value) {
         var user = Parse.User.current();
         var Push = Parse.Object.extend('Pushes');
         var push = new Push();
@@ -18,7 +16,7 @@ angular.module('app.core')
                          acc: LocationService.posData.accuracy
         };
         push.set('location', location);
-        push.set('locStr', pushData.locStr);
+        push.set('locStr', LocationService.locStr);
         push.save(null, {
             success: function(push) {
                 console.log('DATA SAVED TO PARSE: ' + key);
