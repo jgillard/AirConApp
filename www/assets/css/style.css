@@ -86,7 +86,11 @@
 
 /* Home page stylings */
 .home-page {
-  background-color: #fafafa;
+  background-color: #f5f5f5;
+}
+
+.home-page .card {
+  margin: 10px;
 }
 
 .home-page .button.button-block {
@@ -101,7 +105,7 @@
 
 /* Settings page styling */
 .settings-page {
-  background-color: #fafafa;
+  background-color: #f5f5f5;
 }
 
 .settings-page .list {

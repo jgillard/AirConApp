@@ -1,5 +1,6 @@
+cordova platform add android@4.1.1
 bower install ngCordova
-bower install ngstorage
+bower install ngstorage#0.3.9
 cordova plugin add cordova-plugin-statusbar@1.0.1
 cordova plugin add cordova-plugin-vibration@1.2.0
 cordova plugin add cordova.plugins.diagnostic@2.1.0
@@ -12,10 +13,9 @@ cordova plugin add https://github.com/katzer/cordova-plugin-local-notifications#
 cordova plugin add https://github.com/jgillard/cordova-plugin-dialogs
 cordova plugin add https://github.com/jgillard/cordova-plugin-datepicker
 
-
 [MANUAL]
 assets/lib/parse-1.5.0.js
 
 [CHANGES]
-https://github.com/jgillard/cordova-plugin-dialogs: https://github.com/apache/cordova-plugin-dialogs/pull/55
-https://github.com/jgillard/cordova-plugin-datepicker : https://github.com/VitaliiBlagodir/cordova-plugin-datepicker/issues/101
+cordova-plugin-dialogs: https://github.com/apache/cordova-plugin-dialogs/pull/55
+cordova-plugin-datepicker : https://github.com/VitaliiBlagodir/cordova-plugin-datepicker/issues/101
