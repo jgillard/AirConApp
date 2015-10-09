@@ -4,7 +4,7 @@ angular.module('app.core')
     'use strict';
 
     var o = {
-        appVersion: '0.7.1.3'
+        appVersion: '0.7.5'
     };
 
     o.emailDev = function(error, location) {

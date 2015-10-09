@@ -46,7 +46,6 @@ angular.module('app.core')
                 nowGetTime: now.getTime(), dMins: deltaMins, numPushes: numPushes});
 
         o.lastInterval = interval;
-        console.log(o.lastInterval);
         o.next(numPushes);
 
         setTimeout(o.fuzzyQueryScheduled, 500);
@@ -57,7 +56,8 @@ angular.module('app.core')
         $cordovaLocalNotification.clearAll();
         ParseService.savePush('pushAcknowledged', acknowledgedTime);
         var pushData = eval('(' + notification.data + ')');
-        if (pushData.func === 'next' && pushData.pushesLeft === 0) {
+        console.log(pushData);
+        if (pushData.func === 'next' && pushData.pushesLeft === 1) {
             $cordovaDialogs.alert('That was the last one.\nSchedule more if still working.', '', 'understood');
         }
     };
