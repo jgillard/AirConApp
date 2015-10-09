@@ -1,7 +1,7 @@
 angular.module('app.home', [])
 
 .controller('HomeCtrl', function($scope, $ionicPlatform, $cordovaDialogs, $state, $timeout,
-        $ionicViewSwitcher, $localStorage, PushService, LocationService) {
+        PushService, LocationService) {
     'use strict';
 
     $scope.updateGeoBtn = function() {
@@ -123,7 +123,6 @@ angular.module('app.home', [])
     $scope.cancelAll = function() {
         cordova.plugins.notification.local.cancelAll(function() {
             PushService.sendAck();
-            $localStorage.pushQueue = [];
             $cordovaDialogs.alert('All pushes cancelled and reset.', '');
         }, this);
     };

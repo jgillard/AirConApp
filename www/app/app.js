@@ -21,7 +21,6 @@ angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
 
         console.info('ready');
         $localStorage.parseQueue = [];
-        $localStorage.pushQueue = [];
         $rootScope.init();
     });
 
@@ -43,8 +42,9 @@ angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
 
     $rootScope.$on('$cordovaLocalNotification:trigger', function (event, notification, state) {
         console.log('TRIGGERED',notification, state);
-        if($localStorage.pushQueue.length > 0) {
-            $cordovaLocalNotification.schedule($localStorage.pushQueue.shift());
+        var pushData = eval('(' + notification.data + ')');
+        if(pushData.pushesLeft > 1) {
+            PushService.next(pushData.pushesLeft - 1);
         }
         var triggeredTime = new Date();
         ParseService.savePush('pushTriggered', triggeredTime);

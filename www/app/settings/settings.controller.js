@@ -23,9 +23,4 @@ angular.module('app.settings', [])
         console.log($localStorage.parseQueue);
     };
 
-    $scope.showPushQueue = function() {
-        alert(JSON.stringify($localStorage.pushQueue));
-        console.log($localStorage.pushQueue);
-    };
-
 });
