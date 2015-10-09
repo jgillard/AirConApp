@@ -17,6 +17,14 @@ angular.module('app.core')
         };
         push.set('location', location);
         push.set('locStr', LocationService.locStr);
+        o.save(push, key);
+    };
+
+    o.retrySave = function(data) {
+        o.save(data, 'unknown');
+    };
+
+    o.save = function(push, key) {
         push.save(null, {
             success: function(push) {
                 console.log('DATA SAVED TO PARSE: ' + key);
@@ -29,25 +37,6 @@ angular.module('app.core')
                     navigator.vibrate([250,100,50]);
                 } else {
                     DebugService.emailDev(JSON.stringify(push) + JSON.stringify(error),
-                        'parse.service:savePush:save');
-                }
-            }
-        });
-    };
-
-    o.retrySave = function(data) {
-        data.save(null, {
-            success: function(push) {
-                console.log('DATA SAVED TO PARSE: retrySave');
-                navigator.vibrate([200,50,200]);
-            },
-            error: function(push, error) {
-                console.error(error, push);
-                if (error.code === 100) {
-                    $localStorage.parseQueue.push(push);
-                    navigator.vibrate([250,100,50]);
-                } else {
-                    DebugService.emailDev(JSON.stringify(status) + JSON.stringify(error),
                         'parse.service:savePush:save');
                 }
             }
