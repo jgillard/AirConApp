@@ -3,7 +3,9 @@ angular.module('app.core')
 .factory('PushService', function($cordovaLocalNotification, $cordovaDialogs, $localStorage, ParseService) {
     'use strict';
 
-    var o = {};
+    var o = {
+        lastInterval: 0
+    };
 
     var icon = 'file://assets/img/doge.jpg';
 
@@ -14,75 +16,71 @@ angular.module('app.core')
         o.acknowledge(notification);
     };
 
-    o.schedule = function(minutes) {
+    o.next = function(pushesLeft) {
         var scheduleTime = new Date();
-        // scheduleTime.setMinutes(scheduleTime.getMinutes() + minutes);
-        scheduleTime.setSeconds(scheduleTime.getSeconds() + minutes); // for development
-        $cordovaLocalNotification.schedule({
-            id: 0,
-            text: 'Swipe to acknowledge',
+        scheduleTime.setMinutes(scheduleTime.getMinutes() + o.lastInterval);
+        var pushDetails = {
+            id: pushesLeft,
             at: scheduleTime,
-            data: { func: 'schedule', minutes: minutes},
+            data: { func: 'next',
+                    pushesLeft: pushesLeft},
             icon: icon
-        });
+        };
+        if (pushesLeft > 1) {
+            pushDetails.text = 'Swipe to acknowledge';
+        } else {
+            pushDetails.text = 'FINAL PUSH. TAP FOR MORE';
+        }
+
+        $cordovaLocalNotification.schedule(pushDetails);
     };
 
-    o.multiple = function(interval, end, location, callback) {
+    o.first = function(interval, end) {
         $cordovaLocalNotification.cancelAll();
 
         var now = new Date();
-        var deltaSecs = Math.round((end - now) / 1000);
-        var deltaMins = Math.round((deltaSecs) / 60);
+        var deltaMins = Math.round((end - now) / 60000);
         var numPushes = Math.round(deltaMins / interval);
 
         console.log('Multiple Scheduling Calcs', {end: end, endGetTime: end.getTime(),
-                nowGetTime: now.getTime(), dMins: deltaMins, dSecs: deltaSecs, numPushes: numPushes});
+                nowGetTime: now.getTime(), dMins: deltaMins, numPushes: numPushes});
 
-        // Put all pushes into LocalStorage PushQueue, and schedule 1st
-        $localStorage.pushQueue = [];
-        var nextPush = now;
-        for (var i = 0; i < numPushes; i++) {
-            nextPush.setMinutes(nextPush.getMinutes() + interval);
-            var nextPush2 = Math.round(nextPush.getTime() / 1000);
-            // (numPushes - 1) allows changing of final push text
-            if (i < (numPushes - 1)) {
-                $localStorage.pushQueue[i] = {
-                    id: i,
-                    text: 'Swipe to acknowledge',
-                    // every: interval, // string only in iOS (e.g. 'minutes', 'hours')
-                    at: nextPush2,
-                    data: { func: 'multiple', locStr: location },
-                    icon: icon
-                };
-            } else {
-                $localStorage.pushQueue[i] = {
-                    id: i,
-                    text: 'FINAL PUSH. TAP FOR MORE',
-                    at: nextPush2,
-                    data: { func: 'multiple', locStr: location },
-                    icon: icon
-                };
-            }
-        }
+        o.lastInterval = interval;
+        console.log(o.lastInterval);
+        o.next(numPushes);
 
-        $cordovaLocalNotification.schedule($localStorage.pushQueue.shift());
-        setTimeout(callback, 500);
+        setTimeout(o.fuzzyQueryScheduled, 500);
     };
 
     o.acknowledge = function(notification) {
         var acknowledgedTime = new Date();
-        ParseService.savePush('pushAcknowledged', acknowledgedTime, notification);
         $cordovaLocalNotification.clearAll();
+        ParseService.savePush('pushAcknowledged', acknowledgedTime);
         var pushData = eval('(' + notification.data + ')');
-        // Branch based on what function scheduled the notification
-        if (pushData.func !== 'reset') {
-            // MULTIPLE: For queued pushes, wait until none left
-            cordova.plugins.notification.local.getAllScheduled(function (response) {
-                if (response === 'undefined' || response.length === 0) {
-                     $cordovaDialogs.alert('That was the last one.\nSchedule more if still working.', '', 'understood');
-                }
-            });
+        if (pushData.func === 'next' && pushData.pushesLeft === 0) {
+            $cordovaDialogs.alert('That was the last one.\nSchedule more if still working.', '', 'understood');
         }
+    };
+
+    o.fuzzyQueryScheduled = function() {
+        cordova.plugins.notification.local.getScheduled(function (response) {
+            var nextPush = response[0].at;
+            var deltaSec = Math.round(nextPush - Date.now()/1000);
+            var deltaMin = Math.round(deltaSec / 60);
+
+            var pushData = eval('(' +  response[0].data + ')');
+            var numPush = pushData.pushesLeft;
+            if (numPush > 1) {
+                var string = numPush + ' pushes scheduled';
+                if (deltaMin > 1) $cordovaDialogs.alert(string + '.\nNext in ' + deltaMin + ' minutes.', '');
+                else if (deltaMin === 1) $cordovaDialogs.alert(string + '.\nNext in 1 minute.', '');
+                else $cordovaDialogs.alert(string + '.\nNext in < 1 minute.', '');
+            } else {
+                var string = '1 push scheduled';
+                if (deltaMin > 0) $cordovaDialogs.alert(string + ' for ' + deltaMin + ' minutes time.', '');
+                else $cordovaDialogs.alert(string + ' for < 1 minutes time.', '');
+            }
+        });
     };
 
     return o;
