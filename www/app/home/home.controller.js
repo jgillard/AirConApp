@@ -99,4 +99,18 @@ angular.module('app.home', [])
         }, this);
     };
 
+    $scope.pushBack = function() {
+        cordova.plugins.notification.local.getScheduled(function (response) {
+            if (response[0]) {
+                var pushData = eval('(' +  response[0].data + ')');
+                cordova.plugins.notification.local.cancelAll(function() {
+                    PushService.sendAck();
+                    PushService.next(pushData.pushesLeft);
+                }, this);
+            } else {
+                $cordovaDialogs.alert('Nothing currently scheduled', '');
+            }
+        });
+    };
+
 });
