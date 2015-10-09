@@ -5,14 +5,6 @@ angular.module('app.core')
 
     var o = {};
 
-    o.checkConnection = function() {
-        if(window.Connection) {
-            if(navigator.connection.type === Connection.NONE) {
-                // $cordovaDialogs.alert('No internet connection.', 'Warning');
-            }
-        }
-    };
-
     document.addEventListener('online', onOnline, false);
 
     function onOnline() {

@@ -4,7 +4,7 @@ angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
     'app.core', 'app.login', 'app.tabs', 'app.home', 'app.settings'])
 
 .run(function($ionicPlatform, $rootScope, $cordovaDialogs, $cordovaVibration, $localStorage,
-        $cordovaLocalNotification, PushService, LocationService, ParseService, ConnectionService) {
+        $cordovaLocalNotification, PushService, LocationService, ParseService) {
     'use strict';
 
     $ionicPlatform.ready(function() {
@@ -31,7 +31,6 @@ angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
     });
 
     $rootScope.init = function() {
-        ConnectionService.checkConnection();
         LocationService.locationEnabled();
         LocationService.getCurrentPosition();
     };

@@ -23,11 +23,6 @@ angular.module('app.home', [])
         $scope.updateGeoBtn();
     });
 
-    $scope.goSettings = function() {
-        $ionicViewSwitcher.nextDirection('forward');
-        $state.go('tab.settings');
-    };
-
     /* PUSH NOTIFICATION STUFF */
 
     $scope.multiple = {};

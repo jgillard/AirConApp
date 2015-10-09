@@ -4,11 +4,6 @@ angular.module('app.settings', [])
     $ionicViewSwitcher, $localStorage) {
     'use strict';
 
-    $scope.goHome = function() {
-        $ionicViewSwitcher.nextDirection('back');
-        $state.go('tab.home');
-    };
-
     $scope.gotoAPK = function() {
         $cordovaInAppBrowser.open('http://jamesgillard.com/AirConApp.apk', '_system');
     };
