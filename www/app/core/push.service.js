@@ -46,6 +46,10 @@ angular.module('app.core')
                 nowGetTime: now.getTime(), dMins: deltaMins, numPushes: numPushes});
 
         o.lastInterval = interval;
+        if (numPushes === 0) {
+            return;
+        }
+
         o.next(numPushes);
 
         setTimeout(o.fuzzyQueryScheduled, 500);

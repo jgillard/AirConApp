@@ -16,3 +16,5 @@ ionic.project
 gulpfile.js
 AirConApp/config/global.json
 AirConApp/public/index.html
+AirConApp/.parse.project
+AirConApp/.parse.local
