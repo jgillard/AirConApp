@@ -1,7 +1,20 @@
 'use strict';
 
-module.exports.pushQuerySuccess = function(results, callback) {
-    var moment = require('cloud/moment-timezone-with-data-2010-2020.js');
+var moment = require('cloud/moment-timezone-with-data-2010-2020.js');
+
+module.exports.pushQuerySuccess = function(results) {
+
+    // Create users array which contains latest push times and other info for all users from today
+    var users = assembleUsers(results);
+    console.log(users);
+
+    // Analyse each user's push timings, act if requirements met
+    processUsers(users);
+
+};
+
+
+var assembleUsers = function(results) {
     var today = moment().startOf('day');
 
     // Go through each entry in the Parse Pushes database
@@ -41,66 +54,124 @@ module.exports.pushQuerySuccess = function(results, callback) {
             }
         }
     }
-    console.log(users);
+    return users;
+};
+
+
+var processUsers = function(users) {
+    var today = moment().startOf('day');
 
     // Process latest times for each user
     var userKeys = Object.keys(users);
     for (var i = 0; i < userKeys.length; i++) {
         var userKey = userKeys[i];
+        users[userKey]['userId'] = userKey;
+        var user = users[userKey];
 
         // If latest pushScheduled newer than latest pushAcknowledged
         // ie. not responded to - should usually be negative
-        var deltaAck = users[userKey].pushScheduled - users[userKey].pushAcknowledged;
+        var deltaAck = user.pushScheduled - user.pushAcknowledged;
         // And pushScheduled age greater than 10 minutes
-        var deltaNow = moment() - users[userKey].pushScheduled;
+        var deltaNow = moment() - user.pushScheduled;
         // And pushScheduled was today
-        var sameDay = users[userKey].pushScheduled - today;
-        sameDay = (sameDay > 0) ? true : false;
+        var sameDay = (user.pushScheduled - today) > 0;
 
         console.log('userId: ' + userKey + ', dAck: ' + deltaAck + ', dNow: ' + deltaNow + ', sameDay: ' + sameDay);
+
+        // Check if requirements for SMS to user met
         if (deltaAck > 0 && deltaNow > 900000 && sameDay) {
-            var params = {userId: userKey, alarm: false, locStr: users[userKey].locStr, loc: users[userKey].loc, message:
-                'AirCon Lone Worker App: Please press RESET in the next 5 minutes.'};
-            Parse.Cloud.run('sendSMS', params, {
-                success: function(response) {
-                    status.success('User Monitor completed successfully.');
-                },
-                error: function(error) {
-                    console.log(error);
-                    status.error('Uh oh, something went wrong.');
-                }
-            });
+            sendSMS(user, {alarm: false});
         }
+
+        // Check if requirements for HQ to user met
         if (deltaAck > 0 && deltaNow > 1200000 && sameDay) {
-            var ackString = moment(users[userKey].pushAcknowledged).tz('Europe/London').format('ddd DD-MM-YY HH:mm:ss');
-            var schedString = moment(users[userKey].pushScheduled).tz('Europe/London').format('ddd DD-MM-YY HH:mm:ss');
-            var params = {userId: userKey, alarm: true, locStr: users[userKey].locStr, loc: users[userKey].loc, message:
-                'AirConApp: lastAck: ' + ackString + ', lastSched: ' + schedString };
-            Parse.Cloud.run('sendSMS', params, {
-                success: function(response) {
-                    status.success('User Monitor completed successfully.');
-                },
-                error: function(error) {
-                    console.log(error);
-                    status.error('Uh oh, something went wrong.');
-                }
-            });
+            sendSMS(user, {alarm: true});
         }
-    }
-    if (true) {
-        callback.success('pushQuerySuccess success');
-    } else {
-        callback.error('pushQuerySuccess error');
     }
 };
 
 
-module.exports.pushQueryFailure = function(object, error) {
-    console.log('QUERY.FIND ERROR');
-    console.log(error);
-    if (true) {
-        callback.success('pushQueryFailure success');
-    } else {
-        callback.error('pushQueryFailure error');
-    }
+var sendSMS = function(userArr, params) {
+
+    // var twilio = require('twilio')('AC63367523f0ebff7935dc582289f5e2f4',
+    //                                '905e54c174059870cb1b161cc09d5d86');
+
+    Parse.Config.get().then(function(config) {
+
+        var twilio = require('twilio')(config.get('TWILIO_ACCOUNT_SID'),
+                                       config.get('TWILIO_AUTH_TOKEN'));
+
+        var query = new Parse.Query(Parse.User);
+        query.equalTo('objectId', userArr.userId);
+
+        query.find({
+            success: function(user) {
+                var phonenumber;
+                var message;
+
+                var lat = userArr.loc.lat;
+                var long = userArr.loc.long;
+                var gmapsURL = 'http://maps.google.com/maps?q=loc:' + lat + '+' + long;
+
+                if (params.alarm === true) {
+                    phonenumber = '+447809146848';
+                    message = 'AirConApp. User: ' + user[0].get('username') + ', Loc: ' + userArr.locStr + ', Link: ' + gmapsURL;
+                } else {
+                    phonenumber = user[0].get('phonenumber');
+                    message = 'AirCon Lone Worker App: Please press RESET in the next 5 minutes.';
+                }
+
+                // Check whether an SMS already sent today
+                var today = moment().startOf('day');
+                var SMS = Parse.Object.extend('SMS');
+                var query = new Parse.Query(SMS);
+                query.equalTo('to', phonenumber);
+                query.greaterThanOrEqualTo('createdAt', today.toDate());
+                query.find({
+                    success: function(result) {
+                        // If SMS not already sent
+                        if (result.length === 0) {
+                            twilio.sendSms({
+                                to: phonenumber,
+                                from: '+441613751791',
+                                body: message
+                            },
+                            function(err, responseData) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    // Add entry to SMS sent table
+                                    var SMS = Parse.Object.extend('SMS');
+                                    var sms = new SMS();
+                                    sms.set('to', phonenumber);
+                                    sms.set('message', message);
+                                    sms.save(null, {
+                                        success: function(sms) { },
+                                        error: function(sms, error) {
+                                            console.log(error);
+                                            console.log('Failed to create new object, with error code: ' + error.message);
+                                        }
+                                    });
+                                }
+                                if (params.alarm === true) {
+                                    console.log('ALERT! SMS sent to HQ for ' + user[0].get('username'));
+                                } else {
+                                    console.log('WARNING! SMS sent to ' + user[0].get('username'));
+                                }
+                            });
+                        } else {
+                            console.log('Already sent an SMS today');
+                        }
+                    },
+                    error: function(error) {
+                        console('WTF asre we down herez');
+                        console.log(error.code + error.message);
+                    }
+                });
+            }, error: function(error) {
+                console('WTF asre we down here');
+                console.log(error.code + error.message);
+            }
+        });
+    });
 };
