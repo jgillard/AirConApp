@@ -115,7 +115,7 @@ var sendSMS = function(userArr, params) {
 
                 if (params.alarm === true) {
                     phonenumber = '+447809146848';
-                    message = 'AirConApp. User: ' + user[0].get('username') + ', Loc: ' + userArr.locStr + ', Link: ' + gmapsURL;
+                    message = 'AirConApp. 20 minute alert. User: ' + user[0].get('username') + ', Loc: ' + userArr.locStr + ', Link: ' + gmapsURL;
                 } else {
                     phonenumber = user[0].get('phonenumber');
                     message = 'AirCon Lone Worker App: Please press RESET in the next 5 minutes.';

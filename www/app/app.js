@@ -44,7 +44,8 @@ angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
         console.log('TRIGGERED',notification, state);
         var pushData = eval('(' + notification.data + ')');
         if(pushData.pushesLeft > 1) {
-            PushService.next(pushData.pushesLeft - 1);
+            pushData.pushesLeft -= 1;
+            PushService.next(pushData.pushesLeft);
         }
         var triggeredTime = new Date();
         ParseService.savePush('pushTriggered', triggeredTime);

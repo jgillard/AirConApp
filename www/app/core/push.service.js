@@ -7,8 +7,6 @@ angular.module('app.core')
         lastInterval: 0
     };
 
-    var icon = 'file://assets/img/doge.jpg';
-
     o.sendAck = function() {
         // fake notification for acknowledge()
         var notification = {};
@@ -24,7 +22,8 @@ angular.module('app.core')
             at: scheduleTime,
             data: { func: 'next',
                     pushesLeft: pushesLeft},
-            icon: icon
+            icon: 'file://assets/img/doge.jpg',
+            sound: 'file://assets/sound/alert.wav'
         };
         if (pushesLeft > 1) {
             pushDetails.text = 'Swipe to acknowledge';
