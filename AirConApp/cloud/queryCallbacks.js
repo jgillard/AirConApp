@@ -19,7 +19,8 @@ var assembleUsers = function(results) {
 
     // Go through each entry in the Parse Pushes database
     var users = {};
-    var header = ['pushScheduled', 'pushTriggered', 'pushAcknowledged'];
+    var ackRow = 0;
+
     for (var i = 0; i < results.length; i++) {
         var entry = results[i];
         var user = entry.get('user');
@@ -30,29 +31,57 @@ var assembleUsers = function(results) {
             users[user.id] = {
                 username: user.username,
                 pushScheduled: today._d,
-                pushTriggered: today._d,
                 pushAcknowledged: today._d
             };
         }
 
-        // Add latest time for each header column to each user
-        for (var j = 0; j < header.length; j++) {
-            var column = header[j];
-            var entryTime = entry.get(column);
-            var locStr = entry.get('locStr');
-            var loc = entry.get('location');
-            if (entryTime) {
-                var userTime = users[userId][column];
-                if (entryTime > userTime) {
-                    users[userId][column] = entryTime;
-                    // Save location attached to latest pushScheduled
-                    if (column === 'pushScheduled') {
-                        users[userId]['locStr'] = locStr;
-                        users[userId]['loc'] = loc;
+        // Add latest pushAcknowledged for each user
+        var entryTime = entry.get('pushAcknowledged');
+        if (entryTime) {
+            if (entryTime > users[userId]['pushAcknowledged']) {
+                users[userId]['pushAcknowledged'] = entryTime;
+                ackRow = i;
+                users[userId]['locStr'] = entry.get('locStr');
+                users[userId]['loc'] = entry.get('location');
+            }
+        }
+    }
+
+    for (var user in users) {
+        // Find next Sched after Ack
+        var now = moment();
+        var nextSched = now;
+        for (var i = 0; i < results.length; i++) {
+            if (results[i].get('user').id === user) {
+                var entryTime = results[i].get('pushScheduled');
+                if (entryTime) {
+                    if (entryTime - users[user].pushAcknowledged < nextSched - users[user].pushAcknowledged &&
+                        entryTime - users[user].pushAcknowledged > 0) {
+                        nextSched = entryTime;
+                        users[user]['locStr'] = results[i].get('locStr');
+                        users[user]['loc'] = results[i].get('location');
                     }
                 }
             }
         }
+        // If no newer Sched, find previous
+        if (nextSched === now) {
+            console.log('NO NEWER SCHED');
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].get('user').id === user) {
+                    var entryTime = results[i].get('pushScheduled');
+                    if (entryTime && nextSched === now) {
+                        nextSched = entryTime;
+                    }
+                    if (entryTime) {
+                        if (users[user].pushAcknowledged - entryTime < users[user].pushAcknowledged - nextSched) {
+                            nextSched = entryTime;
+                        }
+                    }
+                }
+            }
+        }
+        users[user].pushScheduled = nextSched;
     }
     return users;
 };
@@ -92,9 +121,6 @@ var processUsers = function(users) {
 
 
 var sendSMS = function(userArr, params) {
-
-    // var twilio = require('twilio')('AC63367523f0ebff7935dc582289f5e2f4',
-    //                                '905e54c174059870cb1b161cc09d5d86');
 
     Parse.Config.get().then(function(config) {
 
