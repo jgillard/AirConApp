@@ -36,7 +36,8 @@ angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
 
     $rootScope.$on('$cordovaLocalNotification:schedule', function (event, notification, state) {
         console.log('SCHEDULED', notification, state);
-        var scheduledTime = new Date(notification.at * 1000);
+        // var scheduledTime = new Date(notification.at * 1000);
+        var scheduledTime = new Date();
         ParseService.savePush('pushScheduled', scheduledTime);
     });
 

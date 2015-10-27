@@ -66,7 +66,6 @@ var assembleUsers = function(results) {
         }
         // If no newer Sched, find previous
         if (nextSched === now) {
-            console.log('NO NEWER SCHED');
             for (var i = 0; i < results.length; i++) {
                 if (results[i].get('user').id === user) {
                     var entryTime = results[i].get('pushScheduled');
