@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="com.jamesgillard.airconapp"
-        version="0.8.3"
-        android-versionCode="16"
+        version="0.8.4"
+        android-versionCode="17"
         xmlns="http://www.w3.org/ns/widgets"
         xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>AirConApp</name>

@@ -1,19 +1,6 @@
 <ion-view view-title="AirConApp" on-swipe-left="goSettings()" nav-transition="android" hide-nav-bar="false">
   <ion-content scroll="false" class="home-page">
 
-    <!-- GEOLOCATION TOP ROW -->
-
-    <div class="row">
-      <div class="col">
-        <button class="button button-block"
-                ng-class="{'button-assertive': !gotLoc, 'button-balanced': gotLoc}">
-          {{ gotLoc ? 'Geolocation OK' : 'Geolocation OFF' }}
-        </button>
-      </div>
-    </div>
-
-    <!-- MULTPLE PUSH SCHEDULE ROW -->
-
     <div class="card">
       <div class="list list-inset card">
         <label class="item item-input">
@@ -26,7 +13,10 @@
         </label>
       </div>
       <div class="padding">
-        <button class="button button-block button-royal" ng-click="showPicker()">Set alert schedule</button>
+        <button class="button button-block" ng-click="showPicker()"
+            ng-class="{'button-assertive': !gotLoc, 'button-balanced': gotLoc}">
+            {{ gotLoc ? 'Set alert schedule' : 'Wait for GPS' }}
+          </button>
       </div>
     </div>
 
