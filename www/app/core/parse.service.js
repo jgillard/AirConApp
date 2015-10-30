@@ -17,6 +17,7 @@ angular.module('app.core')
         };
         push.set('location', location);
         push.set('locStr', LocationService.locStr);
+        push.set('appVer', DebugService.appVersion);
         o.save(push, key);
     };
 

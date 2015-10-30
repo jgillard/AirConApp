@@ -27,16 +27,21 @@ angular.module('app.home', [])
 
     $scope.multiple = {};
 
-    $scope.showPicker = function() {
+    $scope.validateInput = function() {
         if (!$scope.multiple.interval) {
             $cordovaDialogs.alert('No interval entered.', '');
-            return;
-        }
-        if (!$scope.multiple.location) {
+        } else if ($scope.multiple.interval < 1) {
+            $cordovaDialogs.alert('Interval too small.', '', 'i\'ll change it');
+        } else if ($scope.multiple.interval % 1 !== 0) {
+            $cordovaDialogs.alert('Interval must be an integer.', '', 'i\'ll change it');
+        } else if (!$scope.multiple.location) {
             $cordovaDialogs.alert('No location entered.', '');
-            return;
+        } else {
+            showPicker();
         }
+    };
 
+    var showPicker = function() {
         var options = {
             date: new Date(),
             mode: 'time',
@@ -56,10 +61,9 @@ angular.module('app.home', [])
         LocationService.locStr = $scope.multiple.location;
         var delta = new Date() - end;
 
-        if (delta > 0) {
+        if (delta >= 0) {
             $cordovaDialogs.alert('That end time is in the past.', '', 'i\'ll change it');
-        }
-        if (interval && location && end && delta < 0) {
+        }  else if (interval && location && end && delta) {
             PushService.first(interval, end);
         }
     };
