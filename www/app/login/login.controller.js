@@ -21,6 +21,11 @@ angular.module('app.login', [])
 
         var formInfo = {username: username, password: password, email: email, signingUp: signingUp};
 
+        if (!window.cordova) {
+            LoginService.callAuth(formInfo, null);
+            return;
+        }
+
         window.plugins.sim.getSimInfo(
             function(simInfo) {
                 LoginService.getSimInfoSuccess(simInfo, formInfo);

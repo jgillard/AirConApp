@@ -75,6 +75,7 @@ angular.module('app.home', [])
     };
 
     var updateCountdown = function() {
+        if (!window.cordova) return;
         cordova.plugins.notification.local.getScheduled(function (response) {
             if (!response[0]) {
                 $scope.countdown.mins = '00';

@@ -8,6 +8,7 @@ angular.module('app.core')
     };
 
     o.emailDev = function(error, location) {
+        if (!window.cordova) return;
         var message = JSON.stringify(error);
         var toSubject = 'mailto:jamesgillard@live.co.uk?subject=AirConApp+Error&body=';
         var explanation = 'Something has gone wrong with the app. Please send this email:';

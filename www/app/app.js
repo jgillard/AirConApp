@@ -17,11 +17,11 @@ angular.module('AirConApp', ['ionic', 'ngCordova', 'ngStorage',
 
         Parse.initialize('fhuSblfircn10OfsD4VPtpXQoFAH2lHFgXtu6YdL', 'cpyzcS6oynBqqBiHr3eEBGfA02AceKVJnaZAcKi5');
         Parse.User.enableRevocableSession();
-        $cordovaVibration.vibrate(100);
+        if (window.cordova) $cordovaVibration.vibrate(100);
 
         console.info('ready');
         $localStorage.parseQueue = [];
-        $rootScope.init();
+        if (window.cordova) $rootScope.init();
     });
 
     $ionicPlatform.on('resume', function(){

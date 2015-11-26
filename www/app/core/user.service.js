@@ -16,6 +16,7 @@ angular.module('app.core')
             user.set('email', email);
             user.set('phonenumber', number);
             user.set('uuid', window.device.uuid);
+            if (window.cordova) user.set('uuid', window.device.uuid);
             return user.signUp(null, {
                 success: function(user) {
                     o.setSession(username);
