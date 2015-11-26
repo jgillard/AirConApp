@@ -17,7 +17,7 @@ angular.module('app.login')
         console.log(simInfo.phoneNumber);
         if(simInfo.simState === 5) {
             if (o.validPhoneNum(simInfo.phoneNumber)) {
-                o.callAuth(f.username, f.password, f.email, simInfo.phoneNumber, f.signingUp);
+                o.callAuth(f, simInfo.phoneNumber);
             } else {
                 console.log('success valid else');
                 o.askPhoneNum(f);
@@ -33,7 +33,7 @@ angular.module('app.login')
         $cordovaDialogs.prompt('Please enter this phone\'s mobile number.')
         .then(function(result) {
             if (o.validPhoneNum(result.input1)) {
-                o.callAuth(f.username, f.password, f.email, result.input1, f.signingUp);
+                o.callAuth(f, result.input1);
             } else {
                 o.askPhoneNum();
             }
@@ -50,8 +50,8 @@ angular.module('app.login')
         }
     };
 
-    o.callAuth = function(username, password, email, phoneNum, signingUp) {
-        UserService.auth(username, password, email, phoneNum, signingUp).then(function() {
+    o.callAuth = function(formInfo, phoneNum) {
+        UserService.auth(formInfo, phoneNum).then(function() {
             $ionicViewSwitcher.nextDirection('forward');
             $state.go('tab.home');
         }, function(error) {

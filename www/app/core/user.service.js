@@ -7,27 +7,26 @@ angular.module('app.core')
         username: false,
     };
 
-    o.auth = function(username, password, email, number, signingUp) {
-        console.log('Attempting login: ' + username, password, email, number, signingUp);
+    o.auth = function(f, number) {
+        console.log('Attempting login: ' + f.username, f.password, f.email, number, f.signingUp);
         var user = new Parse.User();
-        user.set('username', username);
-        user.set('password', password);
-        if (signingUp) {
-            user.set('email', email);
-            user.set('phonenumber', number);
-            user.set('uuid', window.device.uuid);
+        user.set('username', f.username);
+        user.set('password', f.password);
+        if (f.signingUp) {
+            user.set('email', f.email);
+            user.set('phonenumber', f.number);
             if (window.cordova) user.set('uuid', window.device.uuid);
             return user.signUp(null, {
                 success: function(user) {
-                    o.setSession(username);
+                    o.setSession(f.username);
                     console.log('User signed up');
                 }
             });
         } else {
-            return Parse.User.logIn(username, password, {
+            return Parse.User.logIn(f.username, f.password, {
                 success: function(user) {
                     console.log('User logged in');
-                    o.setSession(username);
+                    o.setSession(f.username);
                     o.checkPhone(user, number);
                 }
             });
