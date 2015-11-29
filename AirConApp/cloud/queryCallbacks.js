@@ -107,12 +107,12 @@ var processUsers = function(users) {
         console.log('userId: ' + userKey + ', dAck: ' + deltaAck + ', dNow: ' + deltaNow + ', sameDay: ' + sameDay);
 
         // Check if requirements for SMS to user met
-        if (deltaAck > 0 && deltaNow > 900000 && sameDay) {
+        if (deltaAck > 0 && deltaNow > (31*60*1000) && sameDay) {
             sendSMS(user, {alarm: false});
         }
 
         // Check if requirements for HQ to user met
-        if (deltaAck > 0 && deltaNow > 1200000 && sameDay) {
+        if (deltaAck > 0 && deltaNow > (35*60*1000) && sameDay) {
             sendSMS(user, {alarm: true});
         }
     }
@@ -140,10 +140,10 @@ var sendSMS = function(userArr, params) {
 
                 if (params.alarm === true) {
                     phonenumber = '+447809146848';
-                    message = 'AirConApp. 20 minute alert. User: ' + user[0].get('username') + ', Loc: ' + userArr.locStr + ', Link: ' + gmapsURL;
+                    message = 'AirConApp. 35 minute alert. User: ' + user[0].get('username') + ', Loc: ' + userArr.locStr + ', Link: ' + gmapsURL;
                 } else {
                     phonenumber = user[0].get('phonenumber');
-                    message = 'AirCon Lone Worker App: Please press RESET in the next 5 minutes.';
+                    message = 'AirCon Lone Worker App: Please press RESET in the next 4 minutes.';
                 }
 
                 // Check whether an SMS already sent today
