@@ -34,8 +34,10 @@ angular.module('app.core')
         $cordovaLocalNotification.schedule(pushDetails);
     };
 
-    o.first = function(interval, end) {
+    o.first = function(end) {
         $cordovaLocalNotification.cancelAll();
+
+        var interval = 30;
 
         var now = new Date();
         var deltaMins = Math.round((end - now) / 60000);
